@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 /* ─────────────────────────────────────────────────────────────────────────
    PARTNER PAGE  —  Delta Education Referral Portal
@@ -16,19 +17,55 @@ const PartnerPage = () => {
     name: '', email: '', password: '', upi: '', category: 'SST Student',
   });
 
-  const handleSubmit = async (e) => {
+  // OTP flow state
+  const [otpStep,    setOtpStep]    = useState('form'); // 'form' | 'otp'
+  const [otpValue,   setOtpValue]   = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError,   setOtpError]   = useState('');
+
+  // Step 1 — Send OTP to email
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    setOtpLoading(true);
+    setOtpError('');
+    try {
+      const res  = await fetch(import.meta.env.VITE_SHEET_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'sendOTP', email: formData.email, name: formData.name }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setOtpStep('otp');
+      } else {
+        setOtpError(json.message || 'Could not send OTP. Try again.');
+      }
+    } catch {
+      setOtpError('Server error. Please try again.');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  // Step 2 — Submit OTP + registration in one call (GAS validates OTP inside registerReferrer)
+  const handleVerifyAndRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setOtpError('');
     try {
-      await fetch(import.meta.env.VITE_SHEET_API_URL, {
+      const res  = await fetch(import.meta.env.VITE_SHEET_API_URL, {
         method: 'POST',
-        mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ action: 'registerReferrer', ...formData }),
+        body: JSON.stringify({ action: 'registerReferrer', ...formData, otp: otpValue }),
       });
+      const json = await res.json();
+      if (!json.success) {
+        setOtpError(json.error || json.message || 'Invalid OTP. Please try again.');
+        return;
+      }
       setSubmitted(true);
     } catch {
-      alert('Delta Server Error. Please try again.');
+      setOtpError('Server error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -76,24 +113,26 @@ const PartnerPage = () => {
         className="relative z-10 flex items-center justify-between px-6 md:px-14 py-4"
         style={{ background: '#ffffff', borderBottom: '1px solid #e8edf5' }}
       >
-        {/* Logo — wordmark style */}
-        <div
-          className="px-4 py-2 rounded-lg select-none"
-          style={{ background: '#0056d2' }}
-        >
-          <span
-            style={{
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: 800,
-              fontSize: '13px',
-              letterSpacing: '0.06em',
-              color: '#ffffff',
-              lineHeight: 1,
-              display: 'block',
-            }}
+        {/* Logo — hidden on small screens */}
+        <div className="hidden md:block">
+          <div
+            className="px-4 py-2 rounded-lg select-none"
+            style={{ background: '#0056d2' }}
           >
-            DELTA<br />EDUCATION.
-          </span>
+            <span
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 800,
+                fontSize: '13px',
+                letterSpacing: '0.06em',
+                color: '#ffffff',
+                lineHeight: 1,
+                display: 'block',
+              }}
+            >
+              DELTA<br />EDUCATION.
+            </span>
+          </div>
         </div>
 
         {/* Nav links */}
@@ -308,47 +347,59 @@ const PartnerPage = () => {
       {showIncentiveModal && (
         <Modal onClose={() => setShowIncentiveModal(false)}>
           <div className="text-center mb-6">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
               style={{ background: 'linear-gradient(135deg, #0056d2, #00348f)' }}>
-              💰
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
             <h2 className="text-2xl font-extrabold tracking-tight">
-              Grow With <span style={{ color: 'var(--delta-blue)' }}>Delta</span>
+              Referral <span style={{ color: 'var(--delta-blue)' }}>Incentives</span>
             </h2>
             <p className="text-white/65 text-[13px] mt-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-              Your earnings grow with every referral
+              Earn per successful enrollment — directly to your UPI
             </p>
           </div>
 
-          {/* Commission highlight */}
-          <div
-            className="rounded-2xl p-6 mb-6 text-center"
-            style={{ background: 'rgba(0,86,210,0.12)', border: '1px solid rgba(0,86,210,0.3)' }}
-          >
-            <p className="text-[12px] font-bold uppercase tracking-widest text-white/40 mb-1">Earn up to</p>
-            <p
-              className="font-extrabold mb-1"
-              style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '3rem', color: 'var(--delta-light)', lineHeight: 1 }}
-            >
-              25%
-            </p>
-            <p className="text-[12px] font-semibold text-white/40 uppercase tracking-widest">Commission per enrollment</p>
+          {/* Per-course breakdown */}
+          <div className="space-y-3 mb-5">
+            {[
+              { course: 'Elite',     tag: 'The 1-Stop Solution', amount: '₹1,000', color: '#0056d2', featured: true },
+              { course: 'Achievers', tag: 'Test Series + Prep',   amount: '₹750',   color: '#00348f'              },
+              { course: 'Elevate',   tag: 'Interview Prep',       amount: '₹500',   color: '#001e62'              },
+            ].map(({ course, tag, amount, color, featured }) => (
+              <div
+                key={course}
+                className="flex items-center justify-between px-5 py-4 rounded-xl"
+                style={featured
+                  ? { background: 'linear-gradient(135deg, #0056d2, #00348f)', boxShadow: '0 4px 20px rgba(0,86,210,0.35)' }
+                  : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }
+                }
+              >
+                <div>
+                  <p className="font-bold text-[14px] text-white">{course}</p>
+                  <p className="text-[11px] uppercase tracking-widest" style={{ color: featured ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.4)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{tag}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-extrabold text-[20px] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>{amount}</p>
+                  <p className="text-[10px] uppercase tracking-widest" style={{ color: featured ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.4)' }}>per referral</p>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div
-            className="rounded-xl p-4 mb-6 flex gap-3"
+            className="rounded-xl p-4 mb-5 flex gap-3"
             style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
           >
-            <span className="text-lg shrink-0">💡</span>
-            <p className="text-[13px] text-white/75 leading-relaxed" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-              Exact commission rates and payout details are shared with you personally once you register and are approved as a referral partner.
-              Commissions are paid directly to your UPI ID.
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4d90ff" strokeWidth="2" className="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <p className="text-[13px] text-white/70 leading-relaxed" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+              Amounts shown are for Bracket 1. Higher brackets unlock as your referrals grow.
+              Exact payout details are shared after admin approval.
             </p>
           </div>
 
           <button
             onClick={() => { setShowIncentiveModal(false); setShowSignupModal(true); }}
-            className="w-full py-4 rounded-xl font-bold text-[14px] tracking-wide transition-all hover:brightness-110"
+            className="w-full py-4 rounded-xl font-bold text-[14px] tracking-wide transition-all hover:brightness-110 text-white"
             style={{ background: 'linear-gradient(135deg, #0056d2, #00348f)', boxShadow: '0 4px 20px rgba(0,86,210,0.4)' }}
           >
             Register as a Referrer →
@@ -358,7 +409,7 @@ const PartnerPage = () => {
 
       {/* Signup Modal */}
       {showSignupModal && (
-        <Modal onClose={() => setShowSignupModal(false)}>
+        <Modal onClose={() => { setShowSignupModal(false); setOtpStep('form'); setOtpError(''); }}>
           {!submitted ? (
             <>
               <div className="mb-7">
@@ -366,74 +417,137 @@ const PartnerPage = () => {
                   Join the <span style={{ color: 'var(--delta-blue)' }}>Circle</span>
                 </h2>
                 <p className="text-white/65 text-[13px] mt-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                  Register to start referring and earning with Delta
+                  {otpStep === 'form' ? 'Fill your details — we\'ll send an OTP to verify your email.' : `OTP sent to ${formData.email}`}
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">Full Name</label>
-                  <input type="text" placeholder="e.g. Priya Sharma" required className="modal-input" onChange={field('name')} />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">Email Address</label>
-                  <input type="email" placeholder="you@example.com" required className="modal-input" onChange={field('email')} />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">Password</label>
-                  <input type="password" placeholder="Create a secure password" required className="modal-input" onChange={field('password')} />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">UPI ID</label>
-                  <input type="text" placeholder="yourname@upi" required className="modal-input" onChange={field('upi')} />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">Your Category</label>
-                  <select className="modal-input" onChange={field('category')}>
-                    <option value="SST Student">SST Student</option>
-                    <option value="Aspiring SST Aspirant">Aspiring SST Aspirant</option>
-                    <option value="Delta Student">Delta Student</option>
-                  </select>
-                </div>
+              {/* Step indicator */}
+              <div className="flex items-center gap-3 mb-6">
+                {['Your Details', 'Verify Email'].map((label, i) => (
+                  <React.Fragment key={label}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black"
+                        style={{
+                          background: (i === 0 && otpStep === 'form') || (i === 1 && otpStep === 'otp') ? '#0056d2' : (i === 0 && otpStep === 'otp') ? '#22c55e' : 'rgba(255,255,255,0.1)',
+                          color: '#fff',
+                        }}>
+                        {i === 0 && otpStep === 'otp' ? '✓' : i + 1}
+                      </div>
+                      <span className="text-[11px] font-semibold" style={{ color: (i === 0 && otpStep === 'form') || (i === 1 && otpStep === 'otp') ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)' }}>{label}</span>
+                    </div>
+                    {i === 0 && <div className="flex-1 h-px" style={{ background: otpStep === 'otp' ? '#0056d2' : 'rgba(255,255,255,0.1)' }} />}
+                  </React.Fragment>
+                ))}
+              </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-4 rounded-xl font-bold text-[14px] tracking-wide mt-2 transition-all hover:brightness-110 disabled:opacity-60"
-                  style={{ background: 'linear-gradient(135deg, #0056d2, #00348f)', boxShadow: '0 4px 20px rgba(0,86,210,0.4)' }}
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                      </svg>
-                      Registering…
-                    </span>
-                  ) : 'Apply Now →'}
-                </button>
+              {/* OTP Error */}
+              {otpError && (
+                <div className="flex items-center gap-2 p-3 rounded-xl mb-4 text-[13px] font-medium"
+                  style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                  <span>⚠</span> {otpError}
+                </div>
+              )}
 
-                <p className="text-center text-[11px] text-white/25 pt-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                  By registering, you agree to Delta's referral partner terms.
-                </p>
-              </form>
+              {/* STEP 1 — Details form */}
+              {otpStep === 'form' && (
+                <form onSubmit={handleSendOtp} className="space-y-3">
+                  <div>
+                    <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">Full Name</label>
+                    <input type="text" placeholder="e.g. Priya Sharma" required className="modal-input" value={formData.name} onChange={field('name')} />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">Email Address</label>
+                    <input type="email" placeholder="you@example.com" required className="modal-input" value={formData.email} onChange={field('email')} />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">Password</label>
+                    <input type="password" placeholder="Create a secure password" required className="modal-input" value={formData.password} onChange={field('password')} />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">UPI ID</label>
+                    <input type="text" placeholder="yourname@upi" required className="modal-input" value={formData.upi} onChange={field('upi')} />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">Your Category</label>
+                    <select className="modal-input" value={formData.category} onChange={field('category')}>
+                      <option value="SST Student">SST Student</option>
+                      <option value="Aspiring SST Aspirant">Aspiring SST Aspirant</option>
+                      <option value="Delta Student">Delta Student</option>
+                    </select>
+                  </div>
+                  <button
+                    type="submit" disabled={otpLoading}
+                    className="w-full py-4 rounded-xl font-bold text-[14px] tracking-wide mt-2 transition-all hover:brightness-110 disabled:opacity-60 text-white"
+                    style={{ background: 'linear-gradient(135deg, #0056d2, #00348f)', boxShadow: '0 4px 20px rgba(0,86,210,0.4)' }}
+                  >
+                    {otpLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                        Sending OTP…
+                      </span>
+                    ) : 'Send OTP →'}
+                  </button>
+                  <p className="text-center text-[11px] text-white/25 pt-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>By registering, you agree to Delta's referral partner terms.</p>
+                </form>
+              )}
+
+              {/* STEP 2 — OTP verification */}
+              {otpStep === 'otp' && (
+                <form onSubmit={handleVerifyAndRegister} className="space-y-4">
+                  <div>
+                    <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">6-Digit OTP</label>
+                    <input
+                      type="text" inputMode="numeric" placeholder="_ _ _ _ _ _" required maxLength={6}
+                      className="modal-input text-center text-xl tracking-[0.4em] font-bold"
+                      value={otpValue}
+                      onChange={e => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    />
+                    <p className="text-[11px] mt-1.5" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                      Check your inbox at <span className="text-[#4d90ff]">{formData.email}</span>
+                    </p>
+                  </div>
+                  <button
+                    type="submit" disabled={loading || otpValue.length < 6}
+                    className="w-full py-4 rounded-xl font-bold text-[14px] tracking-wide transition-all hover:brightness-110 disabled:opacity-60 text-white"
+                    style={{ background: 'linear-gradient(135deg, #0056d2, #00348f)', boxShadow: '0 4px 20px rgba(0,86,210,0.4)' }}
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                        Verifying…
+                      </span>
+                    ) : 'Verify & Register →'}
+                  </button>
+                  <button type="button" onClick={() => { setOtpStep('form'); setOtpError(''); }} className="w-full text-[12px] font-semibold text-white/35 hover:text-white/60 transition-colors">
+                    ← Change email / Resend OTP
+                  </button>
+                </form>
+              )}
             </>
           ) : (
             <div className="text-center py-8">
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-6"
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
                 style={{ background: 'rgba(0,86,210,0.15)', border: '2px solid rgba(0,86,210,0.4)' }}
               >
-                ✅
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4d90ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
               </div>
-              <h2 className="text-2xl font-extrabold tracking-tight mb-2">You're In!</h2>
-              <p className="text-white/70 text-[14px] leading-relaxed mb-8" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                Your application has been submitted. Our team will review and activate your account shortly.
-                We'll reach out at the email you provided.
+              <h2 className="text-2xl font-extrabold tracking-tight mb-2 text-white">Application Submitted!</h2>
+              <p className="text-white/70 text-[14px] leading-relaxed mb-6" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                Our admin team will review your request. Log in to track your approval status and access your dashboard once approved.
               </p>
+              <Link
+                to="/login"
+                className="block w-full py-4 rounded-xl font-bold text-[14px] tracking-wide text-center text-white transition-all hover:brightness-110 mb-3"
+                style={{ background: 'linear-gradient(135deg, #0056d2, #00348f)', boxShadow: '0 4px 20px rgba(0,86,210,0.4)' }}
+              >
+                Go to Login
+              </Link>
               <button
                 onClick={() => setShowSignupModal(false)}
-                className="text-[13px] font-bold tracking-widest text-[#4d90ff] hover:text-white transition-colors"
+                className="text-[13px] font-bold tracking-widest text-white/35 hover:text-white/70 transition-colors"
               >
                 Close
               </button>
@@ -564,7 +678,7 @@ const CourseCard = ({ title, tag, features, isFeatured }) => (
     </div>
 
     {/* Features */}
-    <ul className="space-y-3.5 flex-grow mb-8">
+    <ul className="space-y-3.5 flex-grow">
       {features.map((f) => (
         <li key={f} className="flex items-start gap-3 text-[14px]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 500, color: isFeatured ? 'rgba(255,255,255,0.85)' : '#374151' }}>
           <span
@@ -580,17 +694,6 @@ const CourseCard = ({ title, tag, features, isFeatured }) => (
         </li>
       ))}
     </ul>
-
-    {/* Enroll button */}
-    <button
-      className="w-full py-3.5 rounded-xl font-bold text-[14px] transition-all hover:brightness-110"
-      style={isFeatured
-        ? { background: '#ffffff', color: '#0056d2' }
-        : { background: '#0056d2', color: '#ffffff', boxShadow: '0 4px 16px rgba(0,86,210,0.25)' }
-      }
-    >
-      {isFeatured ? 'Get Elite Access' : 'Enroll Now'}
-    </button>
   </div>
 );
 
