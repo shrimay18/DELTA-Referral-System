@@ -38,16 +38,14 @@ const Dashboard = () => {
         const normalized = {
           ...json,
           earnings:        json.totalEarned    ?? 0,
+          amountDue:       json.amountDue      ?? 0,
           recentReferrals: (json.history || []).map(r => ({
-            name:   r.studentName,   // GAS uses studentName
+            name:   r.studentName,
             course: r.course,
             status: r.status,
             date:   r.date,
             amount: r.amount,
           })),
-          // enrolled count derived from history since GAS doesn't return it separately
-          enrolled: (json.history || []).filter(r => r.status === 'Enrolled').length,
-          // referralCode comes from session (GAS getDashboard doesn't echo it back)
           referralCode,
         };
         setData(normalized);
@@ -175,7 +173,7 @@ const Dashboard = () => {
           </p>
 
           <button
-            onClick={() => { setLoading(true); fetchDashboard(session.email); }}
+            onClick={() => { fetchDashboard(session.email, session.referralCode); }}
             className="mt-6 px-6 py-3 rounded-xl font-bold text-[13px] text-white transition-all hover:brightness-110"
             style={{ background: 'linear-gradient(135deg, #0056d2, #00348f)', boxShadow: '0 4px 20px rgba(0,86,210,0.35)' }}
           >
@@ -188,9 +186,9 @@ const Dashboard = () => {
 
   /* ── APPROVED DASHBOARD ── */
   const stats = [
-    { label: 'Total Referrals',  value: data?.totalReferrals ?? 0, icon: UserGroupIcon,   suffix: '' },
-    { label: 'Enrolled',         value: data?.enrolled       ?? 0, icon: CheckCircleIcon, suffix: '' },
-    { label: 'Total Earnings',   value: data?.earnings       ?? 0, icon: CurrencyIcon,    suffix: '', prefix: '₹' },
+    { label: 'Total Referrals', value: data?.totalReferrals ?? 0,  icon: UserGroupIcon, suffix: '',  prefix: ''  },
+    { label: 'Total Earnings',  value: data?.earnings       ?? 0,  icon: CurrencyIcon,  suffix: '',  prefix: '₹' },
+    { label: 'Amount Due',      value: data?.amountDue      ?? 0,  icon: WalletIcon,    suffix: '',  prefix: '₹',  accent: true },
   ];
 
   return (
@@ -242,21 +240,24 @@ const Dashboard = () => {
 
         {/* Stats row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-          {stats.map(({ label, value, icon: Icon, prefix = '', suffix }) => (
+          {stats.map(({ label, value, icon: Icon, prefix = '', suffix, accent }) => (
             <div
               key={label}
               className="p-6 rounded-2xl"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+              style={accent
+                ? { background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.22)' }
+                : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }
+              }
             >
               <div className="flex items-center gap-2 mb-3">
-                <Icon />
-                <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                <Icon accent={accent} />
+                <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: accent ? 'rgba(74,222,128,0.8)' : 'rgba(255,255,255,0.45)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                   {label}
                 </span>
               </div>
               <p
-                className="text-3xl font-extrabold text-white"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
+                className="text-3xl font-extrabold"
+                style={{ fontFamily: 'Montserrat, sans-serif', color: accent ? '#4ade80' : '#ffffff' }}
               >
                 {prefix}{value}{suffix}
               </p>
@@ -413,14 +414,16 @@ const UserGroupIcon = () => (
     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
   </svg>
 );
-const CheckCircleIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4d90ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-  </svg>
-);
 const CurrencyIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4d90ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+  </svg>
+);
+const WalletIcon = ({ accent }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={accent ? '#4ade80' : '#4d90ff'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="1" y="4" width="22" height="16" rx="2"/>
+    <path d="M1 10h22"/>
+    <circle cx="17" cy="15" r="1.5" fill={accent ? '#4ade80' : '#4d90ff'} stroke="none"/>
   </svg>
 );
 
