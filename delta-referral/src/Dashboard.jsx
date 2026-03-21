@@ -38,6 +38,7 @@ const Dashboard = () => {
         const normalized = {
           ...json,
           earnings:        json.totalEarned    ?? 0,
+          received:        json.totalPaid      ?? 0,
           amountDue:       json.amountDue      ?? 0,
           recentReferrals: (json.history || []).map(r => ({
             name:   r.studentName,
@@ -126,7 +127,7 @@ const Dashboard = () => {
   }
 
   /* ── Status comes ONLY from live GAS response ── */
-  const status       = data?.status;          // 'approved' | 'pending' — lowercase from GAS
+  const status       = data?.status;           // 'approved' | 'pending' — lowercase from GAS
   const referralCode = data?.referralCode || session?.referralCode || '—';
 
   /* ── PENDING STATE ── */
@@ -173,7 +174,7 @@ const Dashboard = () => {
           </p>
 
           <button
-            onClick={() => { fetchDashboard(session.email, session.referralCode); }}
+            onClick={() => { setLoading(true); fetchDashboard(session.email, session.referralCode); }}
             className="mt-6 px-6 py-3 rounded-xl font-bold text-[13px] text-white transition-all hover:brightness-110"
             style={{ background: 'linear-gradient(135deg, #0056d2, #00348f)', boxShadow: '0 4px 20px rgba(0,86,210,0.35)' }}
           >
@@ -188,6 +189,7 @@ const Dashboard = () => {
   const stats = [
     { label: 'Total Referrals', value: data?.totalReferrals ?? 0,  icon: UserGroupIcon, suffix: '',  prefix: ''  },
     { label: 'Total Earnings',  value: data?.earnings       ?? 0,  icon: CurrencyIcon,  suffix: '',  prefix: '₹' },
+    { label: 'Amount Received', value: data?.received       ?? 0,  icon: CheckCircleIcon, suffix: '',  prefix: '₹' },
     { label: 'Amount Due',      value: data?.amountDue      ?? 0,  icon: WalletIcon,    suffix: '',  prefix: '₹',  accent: true },
   ];
 
@@ -239,7 +241,7 @@ const Dashboard = () => {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           {stats.map(({ label, value, icon: Icon, prefix = '', suffix, accent }) => (
             <div
               key={label}
@@ -325,64 +327,108 @@ const Dashboard = () => {
 /* ─────────────────────────────────────────────────────────────────────────
    PAGE SHELL (shared nav + dark bg)
 ───────────────────────────────────────────────────────────────────────────*/
-const PageShell = ({ children, onLogout, session, liveStatus }) => (
-  <div
-    className="min-h-screen relative"
-    style={{ background: 'linear-gradient(160deg, #001e62 0%, #00183d 50%, #000f28 100%)' }}
-  >
+const PageShell = ({ children, onLogout, session, liveStatus }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  return (
     <div
-      className="pointer-events-none fixed inset-0 z-0 opacity-[0.07]"
-      style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '28px 28px' }}
-    />
-    <div className="pointer-events-none fixed z-0" style={{
-      top: '-15%', left: '-10%', width: '55vw', height: '55vw',
-      borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(0,86,210,0.18) 0%, transparent 70%)',
-    }} />
-
-    {/* White navbar */}
-    <nav
-      className="relative z-10 flex items-center justify-between px-6 md:px-14 py-4"
-      style={{ background: '#ffffff', borderBottom: '1px solid #e8edf5' }}
+      className="min-h-screen relative"
+      style={{ background: 'linear-gradient(160deg, #001e62 0%, #00183d 50%, #000f28 100%)' }}
     >
-      <div className="hidden md:block">
-        <Link to="/">
-          <div className="px-4 py-2 rounded-lg select-none" style={{ background: '#0056d2' }}>
-            <span style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: '13px', letterSpacing: '0.06em', color: '#ffffff', lineHeight: 1, display: 'block' }}>
-              DELTA<br />EDUCATION.
-            </span>
-          </div>
-        </Link>
-      </div>
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.07]"
+        style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '28px 28px' }}
+      />
+      <div className="pointer-events-none fixed z-0" style={{
+        top: '-15%', left: '-10%', width: '55vw', height: '55vw',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(0,86,210,0.18) 0%, transparent 70%)',
+      }} />
 
-      {/* Active Partner pill — only shown when GAS confirms approved */}
-      {liveStatus === 'approved' && (
-        <div
-          className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full"
-          style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)' }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-          <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#22c55e' }}>Active Partner</span>
+      {/* White navbar */}
+      <nav
+        className="relative z-20 flex items-center justify-between px-6 md:px-14 py-4"
+        style={{ background: '#ffffff', borderBottom: '1px solid #e8edf5' }}
+      >
+        <div className="flex items-center gap-4">
+          <Link to="/">
+            <div className="px-3 py-1.5 md:px-4 md:py-2 rounded-lg select-none" style={{ background: '#0056d2' }}>
+              <span className="text-[11px] md:text-[13px]" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, letterSpacing: '0.06em', color: '#ffffff', lineHeight: 1, display: 'block' }}>
+                DELTA<br />EDUCATION.
+              </span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Desktop Actions */}
+        <div className="hidden md:flex items-center gap-3 lg:gap-4">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=support@thedelta.co.in&su=Partner%20Portal%20Query"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 rounded-lg text-[12px] font-bold text-white transition-all hover:brightness-110 shadow-md"
+            style={{ background: '#e11d48' }}
+          >
+            Raise Query
+          </a>
+
+          <button
+            onClick={onLogout}
+            className="text-[12px] font-bold px-4 py-2 rounded-lg transition-all hover:bg-[#001e62]/10"
+            style={{ color: '#001e62', border: '1px solid #e8edf5' }}
+          >
+            Sign Out
+          </button>
+        </div>
+
+        {/* Mobile Hamburger Button */}
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="p-2 text-[#001e62] focus:outline-none"
+          >
+            {isMenuOpen ? (
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Dropdown */}
+      {isMenuOpen && (
+        <div className="md:hidden absolute top-[72px] left-0 right-0 bg-white border-b border-[#e8edf5] z-30 shadow-xl overflow-hidden animate-in slide-in-from-top duration-200">
+          <div className="flex flex-col p-6 gap-4">
+            <a
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=support@thedelta.co.in&su=Partner%20Portal%20Query"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-bold text-white shadow-lg"
+              style={{ background: '#e11d48' }}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Raise Query
+            </a>
+            <button
+              onClick={() => { onLogout(); setIsMenuOpen(false); }}
+              className="flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-bold transition-all border border-[#e8edf5]"
+              style={{ color: '#001e62' }}
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       )}
 
-      <div className="flex items-center gap-4">
-        <span className="text-[13px] font-semibold hidden sm:block" style={{ color: '#001e62' }}>
-          {session?.name}
-        </span>
-        <button
-          onClick={onLogout}
-          className="text-[13px] font-bold px-4 py-2 rounded-lg transition-all hover:bg-[#001e62]/10"
-          style={{ color: '#001e62', border: '1px solid #e8edf5' }}
-        >
-          Sign Out
-        </button>
-      </div>
-    </nav>
-
-    <div className="relative z-10">{children}</div>
-  </div>
-);
+      <div className="relative z-10">{children}</div>
+    </div>
+  );
+};
 
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -390,7 +436,7 @@ const PageShell = ({ children, onLogout, session, liveStatus }) => (
 ───────────────────────────────────────────────────────────────────────────*/
 const StatusBadge = ({ status }) => {
   const map = {
-    Enrolled:  { bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.3)',  text: '#4ade80' },
+    Enrolled:  { bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.3)',   text: '#4ade80' },
     Pending:   { bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)', text: '#fbbf24' },
     Referred:  { bg: 'rgba(0,86,210,0.12)',   border: 'rgba(0,86,210,0.3)',   text: '#4d90ff' },
   };
@@ -424,6 +470,11 @@ const WalletIcon = ({ accent }) => (
     <rect x="1" y="4" width="22" height="16" rx="2"/>
     <path d="M1 10h22"/>
     <circle cx="17" cy="15" r="1.5" fill={accent ? '#4ade80' : '#4d90ff'} stroke="none"/>
+  </svg>
+);
+const CheckCircleIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4d90ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
   </svg>
 );
 

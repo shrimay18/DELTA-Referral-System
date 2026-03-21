@@ -10,18 +10,19 @@ import { Link } from 'react-router-dom';
 
 const PartnerPage = () => {
   const [showIncentiveModal, setShowIncentiveModal] = useState(false);
-  const [showSignupModal,    setShowSignupModal]    = useState(false);
-  const [loading,   setLoading]   = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile Menu State
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [formData,  setFormData]  = useState({
+  const [formData, setFormData] = useState({
     name: '', email: '', password: '', upi: '', category: 'SST Student',
   });
 
   // OTP flow state
-  const [otpStep,    setOtpStep]    = useState('form'); // 'form' | 'otp'
-  const [otpValue,   setOtpValue]   = useState('');
+  const [otpStep, setOtpStep] = useState('form'); // 'form' | 'otp'
+  const [otpValue, setOtpValue] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
-  const [otpError,   setOtpError]   = useState('');
+  const [otpError, setOtpError] = useState('');
 
   // Step 1 — Send OTP to email
   const handleSendOtp = async (e) => {
@@ -29,7 +30,7 @@ const PartnerPage = () => {
     setOtpLoading(true);
     setOtpError('');
     try {
-      const res  = await fetch(import.meta.env.VITE_SHEET_API_URL, {
+      const res = await fetch(import.meta.env.VITE_SHEET_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ action: 'sendOTP', email: formData.email, name: formData.name }),
@@ -53,7 +54,7 @@ const PartnerPage = () => {
     setLoading(true);
     setOtpError('');
     try {
-      const res  = await fetch(import.meta.env.VITE_SHEET_API_URL, {
+      const res = await fetch(import.meta.env.VITE_SHEET_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ action: 'registerReferrer', ...formData, otp: otpValue }),
@@ -108,49 +109,70 @@ const PartnerPage = () => {
       {/* ════════════════════════════════════════════════════════════════
           NAV BAR
       ════════════════════════════════════════════════════════════════ */}
-      {/* ── White Navbar ────────────────────────────────────────────────── */}
       <nav
-        className="relative z-10 flex items-center justify-between px-6 md:px-14 py-4"
+        className="relative z-[110] flex items-center justify-between px-6 md:px-14 py-4"
         style={{ background: '#ffffff', borderBottom: '1px solid #e8edf5' }}
       >
-        {/* Logo — hidden on small screens */}
-        <div className="hidden md:block">
-          <div
-            className="px-4 py-2 rounded-lg select-none"
-            style={{ background: '#0056d2' }}
-          >
-            <span
-              style={{
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: 800,
-                fontSize: '13px',
-                letterSpacing: '0.06em',
-                color: '#ffffff',
-                lineHeight: 1,
-                display: 'block',
-              }}
-            >
-              DELTA<br />EDUCATION.
-            </span>
-          </div>
+        <div className="flex items-center">
+          <Link to="/">
+            <div className="px-4 py-2 rounded-lg select-none" style={{ background: '#0056d2' }}>
+              <span style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: '13px', letterSpacing: '0.06em', color: '#ffffff', lineHeight: 1, display: 'block' }}>
+                DELTA<br />EDUCATION.
+              </span>
+            </div>
+          </Link>
         </div>
 
-        {/* Nav links */}
-        <div className="hidden md:flex gap-8 text-[13px] font-semibold" style={{ color: '#001e62' }}>
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-8 text-[13px] font-semibold" style={{ color: '#001e62' }}>
           <a href="#courses" className="hover:text-[#0056d2] transition-colors">Courses</a>
           <button onClick={() => setShowIncentiveModal(true)} className="hover:text-[#0056d2] transition-colors">
             Incentives
           </button>
+          
+          <div className="flex items-center gap-4 ml-4">
+            <Link 
+                to="/login" 
+                className="px-5 py-2.5 rounded-lg border border-[#e8edf5] hover:bg-gray-50 transition-all text-[#001e62]"
+            >
+                Login
+            </Link>
+            <button
+                onClick={() => setShowSignupModal(true)}
+                className="font-bold px-5 py-2.5 rounded-lg text-white transition-all hover:brightness-110 hover:-translate-y-px"
+                style={{ background: '#0056d2', boxShadow: '0 4px 16px rgba(0,86,210,0.30)' }}
+            >
+                Join Now
+            </button>
+          </div>
         </div>
 
-        {/* CTA */}
-        <button
-          onClick={() => setShowSignupModal(true)}
-          className="text-[13px] font-bold px-5 py-2.5 rounded-lg text-white transition-all hover:brightness-110 hover:-translate-y-px"
-          style={{ background: '#0056d2', boxShadow: '0 4px 16px rgba(0,86,210,0.30)' }}
+        {/* Mobile Hamburger Toggle */}
+        <button 
+          className="md:hidden flex flex-col gap-1.5 p-2"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          Join Now
+          <div className={`w-6 h-0.5 bg-[#001e62] transition-all ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <div className={`w-6 h-0.5 bg-[#001e62] ${isMenuOpen ? 'opacity-0' : ''}`} />
+          <div className={`w-6 h-0.5 bg-[#001e62] transition-all ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
         </button>
+
+        {/* Mobile Menu Overlay */}
+        {isMenuOpen && (
+          <div className="absolute top-full left-0 w-full bg-white border-b border-gray-100 flex flex-col p-6 gap-4 md:hidden shadow-xl animate-fade-in">
+            <a href="#courses" onClick={() => setIsMenuOpen(false)} className="text-[15px] font-bold text-[#001e62]">Courses</a>
+            <button onClick={() => { setShowIncentiveModal(true); setIsMenuOpen(false); }} className="text-left text-[15px] font-bold text-[#001e62]">Incentives</button>
+            <hr className="border-gray-100" />
+            <Link to="/login" onClick={() => setIsMenuOpen(false)} className="text-[15px] font-bold text-[#0056d2]">Partner Login</Link>
+            <button
+              onClick={() => { setShowSignupModal(true); setIsMenuOpen(false); }}
+              className="w-full py-3 rounded-lg text-white font-bold text-center"
+              style={{ background: '#0056d2' }}
+            >
+              Join Now
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* ════════════════════════════════════════════════════════════════
@@ -158,8 +180,6 @@ const PartnerPage = () => {
       ════════════════════════════════════════════════════════════════ */}
       <section className="relative z-10 px-6 pt-28 pb-24 text-center">
         <div className="max-w-4xl mx-auto">
-
-          {/* Eyebrow badge */}
           <div className="animate-fade-in inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8"
             style={{ background: 'rgba(0,86,210,0.12)', border: '1px solid rgba(0,86,210,0.35)' }}>
             <span className="w-1.5 h-1.5 rounded-full bg-[#4d90ff] animate-pulse" />
@@ -168,7 +188,6 @@ const PartnerPage = () => {
             </span>
           </div>
 
-          {/* Main headline */}
           <h1
             className="animate-slide-up font-extrabold leading-[1.08] tracking-tight mb-6"
             style={{ fontSize: 'clamp(2.8rem, 7vw, 5.5rem)', animationDelay: '0.1s' }}
@@ -178,7 +197,6 @@ const PartnerPage = () => {
             <span className="text-shimmer">Shape Tomorrow.</span>
           </h1>
 
-          {/* Sub-headline */}
           <p
             className="animate-slide-up text-white/75 leading-relaxed mx-auto mb-10"
             style={{
@@ -193,7 +211,6 @@ const PartnerPage = () => {
             share our courses, and earn meaningful commissions doing work that matters.
           </p>
 
-          {/* CTA buttons */}
           <div className="animate-slide-up flex flex-wrap justify-center gap-4" style={{ animationDelay: '0.34s' }}>
             <button
               onClick={() => setShowSignupModal(true)}
@@ -222,7 +239,6 @@ const PartnerPage = () => {
             </button>
           </div>
 
-          {/* Trust line */}
           <p className="animate-fade-in mt-8 text-[12px] text-white/50 font-medium tracking-widest uppercase"
             style={{ animationDelay: '0.5s' }}>
             Trusted by 2,500+ learners · 48.6% selection ratio
@@ -343,7 +359,6 @@ const PartnerPage = () => {
           MODALS
       ════════════════════════════════════════════════════════════════ */}
 
-      {/* Incentive Modal */}
       {showIncentiveModal && (
         <Modal onClose={() => setShowIncentiveModal(false)}>
           <div className="text-center mb-6">
@@ -359,7 +374,6 @@ const PartnerPage = () => {
             </p>
           </div>
 
-          {/* Per-course breakdown */}
           <div className="space-y-3 mb-5">
             {[
               { course: 'Elite',     tag: 'The 1-Stop Solution', amount: '₹1,000', color: '#0056d2', featured: true },
@@ -386,17 +400,6 @@ const PartnerPage = () => {
             ))}
           </div>
 
-          <div
-            className="rounded-xl p-4 mb-5 flex gap-3"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4d90ff" strokeWidth="2" className="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            <p className="text-[13px] text-white/70 leading-relaxed" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-              Amounts shown are for Bracket 1. Higher brackets unlock as your referrals grow.
-              Exact payout details are shared after admin approval.
-            </p>
-          </div>
-
           <button
             onClick={() => { setShowIncentiveModal(false); setShowSignupModal(true); }}
             className="w-full py-4 rounded-xl font-bold text-[14px] tracking-wide transition-all hover:brightness-110 text-white"
@@ -407,7 +410,6 @@ const PartnerPage = () => {
         </Modal>
       )}
 
-      {/* Signup Modal */}
       {showSignupModal && (
         <Modal onClose={() => { setShowSignupModal(false); setOtpStep('form'); setOtpError(''); }}>
           {!submitted ? (
@@ -421,7 +423,6 @@ const PartnerPage = () => {
                 </p>
               </div>
 
-              {/* Step indicator */}
               <div className="flex items-center gap-3 mb-6">
                 {['Your Details', 'Verify Email'].map((label, i) => (
                   <React.Fragment key={label}>
@@ -440,7 +441,6 @@ const PartnerPage = () => {
                 ))}
               </div>
 
-              {/* OTP Error */}
               {otpError && (
                 <div className="flex items-center gap-2 p-3 rounded-xl mb-4 text-[13px] font-medium"
                   style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
@@ -448,7 +448,6 @@ const PartnerPage = () => {
                 </div>
               )}
 
-              {/* STEP 1 — Details form */}
               {otpStep === 'form' && (
                 <form onSubmit={handleSendOtp} className="space-y-3">
                   <div>
@@ -491,7 +490,6 @@ const PartnerPage = () => {
                 </form>
               )}
 
-              {/* STEP 2 — OTP verification */}
               {otpStep === 'otp' && (
                 <form onSubmit={handleVerifyAndRegister} className="space-y-4">
                   <div>
@@ -604,7 +602,6 @@ const MetricCard = ({ metric, label, desc, isFeatured }) => (
       boxShadow: '0 4px 24px rgba(0,30,98,0.09)',
     }}
   >
-    {/* Icon row */}
     <div className="flex items-center gap-2 mb-4" style={{ justifyContent: 'flex-start' }}>
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center"
@@ -628,7 +625,6 @@ const MetricCard = ({ metric, label, desc, isFeatured }) => (
     >
       {metric}
     </p>
-    {/* Blue accent line */}
     <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${isFeatured ? 'rgba(255,255,255,0.2)' : '#e8edf5'}` }}>
       <p className="text-[12px] text-left leading-relaxed" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', color: isFeatured ? 'rgba(255,255,255,0.75)' : '#6b7a99' }}>{desc}</p>
     </div>
@@ -651,7 +647,6 @@ const CourseCard = ({ title, tag, features, isFeatured }) => (
       boxShadow: '0 4px 24px rgba(0,30,98,0.07)',
     }}
   >
-    {/* Recommended badge */}
     {isFeatured && (
       <div
         className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[11px] font-black uppercase tracking-widest px-5 py-1 rounded-full text-white"
@@ -661,7 +656,6 @@ const CourseCard = ({ title, tag, features, isFeatured }) => (
       </div>
     )}
 
-    {/* Card header */}
     <div className="mb-7 mt-1">
       <h3
         className="text-2xl font-extrabold tracking-tight mb-1"
@@ -677,7 +671,6 @@ const CourseCard = ({ title, tag, features, isFeatured }) => (
       </p>
     </div>
 
-    {/* Features */}
     <ul className="space-y-3.5 flex-grow">
       {features.map((f) => (
         <li key={f} className="flex items-start gap-3 text-[14px]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 500, color: isFeatured ? 'rgba(255,255,255,0.85)' : '#374151' }}>
@@ -702,7 +695,7 @@ const CourseCard = ({ title, tag, features, isFeatured }) => (
 ───────────────────────────────────────────────────────────────────────────*/
 const Modal = ({ children, onClose }) => (
   <div
-    className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+    className="fixed inset-0 z-[120] flex items-center justify-center p-4 animate-fade-in"
     style={{ background: 'rgba(0,10,30,0.92)', backdropFilter: 'blur(12px)' }}
     onClick={(e) => e.target === e.currentTarget && onClose()}
   >
@@ -716,7 +709,6 @@ const Modal = ({ children, onClose }) => (
         overflowY: 'auto',
       }}
     >
-      {/* Close button */}
       <button
         onClick={onClose}
         className="absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all text-lg"
