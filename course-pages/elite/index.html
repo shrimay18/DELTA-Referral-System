@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elite Track — Delta Education</title>
+  <meta name="description" content="The most complete NSET preparation program. Topic-wise lectures, mock tests, live sessions & full interview prep — everything you need to crack SST." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+
+    :root {
+      --navy:   #001e62;
+      --royal:  #00348f;
+      --blue:   #0056d2;
+      --blue-mid: #004bb5;
+      --light:  #4d90ff;
+      --bg:     #060d1f;
+      --surface: #0c1630;
+      --surface2:#111d3a;
+      --border: rgba(255,255,255,0.07);
+      --text:   #f0f4ff;
+      --muted:  rgba(240,244,255,0.5);
+      --gold:   #f0b429;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1,h2,h3,h4 { font-family: 'Montserrat', sans-serif; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--royal); border-radius: 4px; }
+
+    /* ─── Keyframes ─── */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    @keyframes borderGlow {
+      0%,100% { box-shadow: 0 0 0 1px rgba(0,86,210,0.3); }
+      50%      { box-shadow: 0 0 0 1px rgba(0,86,210,0.7), 0 0 24px rgba(0,86,210,0.15); }
+    }
+    .reveal { opacity:0; transform:translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: #ffffff;
+      border-bottom: 1px solid #e8edf5;
+    }
+    .nav-logo-block {
+      display: flex; flex-direction: column;
+      background: #0056d2;
+      border-radius: 8px;
+      padding: 7px 10px;
+      text-decoration: none;
+      line-height: 1;
+    }
+    .nav-logo-block span {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800; font-size: 0.72rem;
+      letter-spacing: 0.06em; color: #fff;
+      display: block; line-height: 1.25;
+    }
+    .nav-elite-logo {
+      display: none;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800; font-size: 1rem;
+      color: #001e62; text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-elite-logo span { color: #0056d2; }
+
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .nav-tag {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #0056d2;
+      border: 1px solid rgba(0,86,210,0.3);
+      padding: 5px 14px; border-radius: 4px;
+    }
+    .nav-back, .nav-home-mobile {
+      font-size: 0.83rem; font-weight: 600; color: #001e62;
+      text-decoration: none; transition: color 0.2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-home-mobile { display: none; }
+    .nav-back:hover, .nav-home-mobile:hover { color: #0056d2; }
+    .nav-back svg, .nav-home-mobile svg { width: 14px; height: 14px; }
+
+    @media(max-width:768px) {
+      nav { padding: 0 20px; }
+      .nav-logo-block, .nav-tag, .nav-back { display: none; }
+      .nav-elite-logo, .nav-home-mobile { display: block; }
+      .nav-right { gap: 0; }
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      min-height: 90vh;
+      display: flex; align-items: center;
+      overflow: hidden;
+    }
+
+    /* Mesh gradient background */
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 30%, rgba(0,86,210,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(0,52,143,0.15) 0%, transparent 60%),
+        var(--bg);
+    }
+    /* Grid lines  */
+    .hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    }
+
+    .hero-inner {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto;
+      padding: 100px 48px 80px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 64px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--light);
+      margin-bottom: 24px;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--light);
+      box-shadow: 0 0 8px var(--light);
+      flex-shrink: 0;
+    }
+
+    h1.hero-title {
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 900; line-height: 1.05;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .hero-title-accent {
+      background: linear-gradient(90deg, #4d90ff 0%, #a0c4ff 50%, #4d90ff 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 5s linear infinite;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem; line-height: 1.75;
+      color: var(--muted); max-width: 520px;
+      margin-bottom: 36px;
+    }
+
+    .hero-stats {
+      display: flex; gap: 32px; flex-wrap: wrap;
+      margin-bottom: 44px;
+    }
+    .hero-stat-value {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.6rem; font-weight: 900;
+      color: #fff; line-height: 1;
+    }
+    .hero-stat-label {
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--muted); margin-top: 4px;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .stat-sep {
+      width: 1px; height: 40px;
+      background: var(--border); align-self: center;
+    }
+
+    .hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+    .btn-enroll {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--blue);
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800; font-size: 0.95rem;
+      padding: 15px 36px; border-radius: 8px;
+      border: none; cursor: pointer; text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(0,86,210,0.35);
+    }
+    .btn-enroll:hover {
+      background: #0067f5;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,86,210,0.5);
+    }
+
+    .hero-price-hint {
+      font-size: 0.88rem; font-weight: 600;
+      color: var(--muted); display: flex; align-items: center; gap: 10px;
+    }
+    .hero-price-hint .strike {
+      text-decoration: line-through; color: rgba(240,244,255,0.3);
+      font-size: 0.85rem;
+    }
+    .hero-price-hint .current-price {
+      color: var(--gold); font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem; font-weight: 800;
+    }
+    .hero-price-hint .save {
+      background: rgba(240,180,41,0.12);
+      color: var(--gold); font-size: 0.72rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 4px;
+    }
+
+    /* Hero card (right column) */
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      animation: borderGlow 4s ease-in-out infinite;
+    }
+    .hero-card-title {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .hero-card-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .hero-card-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 0.9rem; font-weight: 500; line-height: 1.5;
+      color: rgba(240,244,255,0.8);
+    }
+    .hero-card-list li .check {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: rgba(0,86,210,0.2); border: 1px solid rgba(0,86,210,0.4);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .hero-card-list li .check svg { width: 10px; height: 10px; color: var(--light); }
+    .hero-card-divider { height: 1px; background: var(--border); margin: 24px 0; }
+    .hero-card-price-label { font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .hero-card-price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+    .hero-card-original { font-size: 1rem; color: rgba(240,244,255,0.3); text-decoration: line-through; font-weight: 600; }
+    .hero-card-current { font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; color: #fff; }
+    .hero-card-save { font-size: 0.72rem; font-weight: 700; color: var(--gold); background: rgba(240,180,41,0.1); border: 1px solid rgba(240,180,41,0.2); padding: 3px 10px; border-radius: 4px; }
+    .btn-enroll-card {
+      display: block; width: 100%; text-align: center;
+      background: var(--blue); color: #fff;
+      font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.95rem;
+      padding: 14px; border-radius: 8px; text-decoration: none;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(0,86,210,0.3);
+    }
+    .btn-enroll-card:hover { background: #0067f5; box-shadow: 0 8px 28px rgba(0,86,210,0.45); }
+    .hero-card-note { font-size: 0.72rem; color: var(--muted); text-align: center; margin-top: 10px; }
+
+    @media(max-width:900px) {
+      .hero-inner { grid-template-columns: 1fr; padding: 70px 24px 60px; gap: 48px; }
+      .hero-card { display: none; }
+    }
+
+    /* ─── SECTION BASE ─── */
+    .section { max-width: 1100px; margin: 0 auto; padding: 96px 48px; }
+    @media(max-width:600px) { .section { padding: 64px 20px; } }
+
+    .section-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--light);
+      margin-bottom: 14px;
+    }
+    .section-heading {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 900; color: #fff; letter-spacing: -0.5px;
+      line-height: 1.15; margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 1rem; color: var(--muted);
+      max-width: 560px; line-height: 1.7; margin-bottom: 56px;
+    }
+    .divider { height: 1px; background: var(--border); }
+
+    /* ─── WHAT'S INCLUDED ─── */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    @media(max-width:800px) { .modules-grid { grid-template-columns: 1fr; } }
+    @media(min-width:800px) and (max-width:1100px) { .modules-grid { grid-template-columns: repeat(2,1fr); } }
+
+    .module-item {
+      background: var(--surface);
+      padding: 32px 28px;
+      transition: background 0.22s;
+      cursor: default;
+    }
+    .module-item:hover { background: var(--surface2); }
+
+    .module-number {
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 0.75rem; letter-spacing: 0.1em;
+      color: var(--blue); margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    .module-title {
+      font-size: 1rem; font-weight: 700; color: #fff;
+      margin-bottom: 10px; line-height: 1.3;
+    }
+    .module-desc {
+      font-size: 0.86rem; line-height: 1.7; color: var(--muted);
+    }
+    .module-tags {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px;
+    }
+    .module-tag {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;
+      color: var(--light); background: rgba(77,144,255,0.1);
+      border: 1px solid rgba(77,144,255,0.2);
+      padding: 3px 10px; border-radius: 4px;
+    }
+    /* Full-width module */
+    .module-item.wide { grid-column: span 3; display: flex; gap: 40px; align-items: flex-start; }
+    .module-item.wide .module-body { flex: 1; }
+    .module-item.wide .module-extras { flex: 1; }
+    @media(max-width:800px) { .module-item.wide { grid-column: span 1; flex-direction: column; gap: 20px; } }
+    @media(min-width:800px) and (max-width:1100px) { .module-item.wide { grid-column: span 2; } }
+
+    /* ─── WHO IS THIS FOR ─── */
+    .who-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;
+    }
+    .who-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 22px;
+      display: flex; gap: 16px; align-items: flex-start;
+      transition: border-color 0.22s, background 0.22s;
+    }
+    .who-item:hover { border-color: rgba(0,86,210,0.3); background: var(--surface2); }
+    .who-index {
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 1.5rem; color: rgba(0,86,210,0.25); flex-shrink: 0; line-height: 1;
+    }
+    .who-text { font-size: 0.9rem; color: rgba(240,244,255,0.75); line-height: 1.6; font-weight: 500; }
+
+    /* ─── OUTCOMES ─── */
+    .outcomes-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px;
+    }
+    .outcome-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-align: center;
+      transition: border-color 0.22s;
+    }
+    .outcome-card:hover { border-color: rgba(0,86,210,0.4); }
+    .outcome-value {
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 2.5rem; color: #fff; margin-bottom: 4px;
+    }
+    .outcome-value span { color: var(--light); }
+    .outcome-label { font-size: 0.82rem; color: var(--muted); font-weight: 500; line-height: 1.5; }
+
+    /* ─── BOTTOM CTA ─── */
+    .cta-section {
+      position: relative; overflow: hidden;
+      border-top: 1px solid var(--border);
+      padding: 100px 48px 110px;
+      text-align: center;
+    }
+    /* Blue glow top-center */
+    .cta-section::before {
+      content: '';
+      position: absolute; top: -40%; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,86,210,0.14) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+    /* Subtle horizontal line accent */
+    .cta-section::after {
+      content: '';
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 120px; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--blue), transparent);
+    }
+    .cta-inner { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
+    .cta-eyebrow {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--light);
+      margin-bottom: 20px;
+    }
+    .cta-section h2 {
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      font-weight: 900; color: #fff; line-height: 1.1;
+      letter-spacing: -1px; margin-bottom: 18px;
+    }
+    .cta-section h2 em {
+      font-style: normal;
+      background: linear-gradient(90deg, #4d90ff, #a0c4ff);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .cta-section > .cta-inner > p {
+      color: var(--muted); font-size: 1.05rem;
+      line-height: 1.7; margin-bottom: 48px;
+    }
+    .cta-card {
+      background: var(--surface);
+      border: 1px solid rgba(0,86,210,0.25);
+      border-radius: 20px;
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+      text-align: left;
+      box-shadow: 0 0 60px rgba(0,86,210,0.1);
+    }
+    .cta-price-label { font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .cta-price-row {
+      display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; flex-wrap: wrap;
+    }
+    .cta-strike { font-size: 1.2rem; color: rgba(240,244,255,0.25); font-weight: 600; text-decoration: line-through; }
+    .cta-price {
+      font-family: 'Montserrat', sans-serif; font-size: 3rem;
+      font-weight: 900; color: #fff; line-height: 1;
+    }
+    .cta-save {
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--gold); background: rgba(240,180,41,0.12);
+      border: 1px solid rgba(240,180,41,0.25);
+      padding: 5px 12px; border-radius: 6px; align-self: center;
+    }
+    .cta-seats {
+      font-size: 0.82rem; color: rgba(240,244,255,0.4); font-weight: 500; margin-top: 4px;
+    }
+    .cta-card-right { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+    .btn-cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--blue); color: #fff;
+      font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1rem;
+      padding: 18px 44px; border-radius: 10px; text-decoration: none;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 32px rgba(0,86,210,0.45);
+      white-space: nowrap;
+    }
+    .btn-cta:hover { background: #0067f5; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,86,210,0.6); }
+    .cta-included {
+      font-size: 0.78rem; color: rgba(240,244,255,0.4);
+      font-weight: 500; text-align: right; line-height: 1.5;
+    }
+    @media(max-width:700px) {
+      .cta-card { flex-direction: column; text-align: center; padding: 32px 24px; }
+      .cta-card-right { align-items: center; width: 100%; }
+      .btn-cta { width: 100%; justify-content: center; }
+      .cta-price-row { justify-content: center; }
+      .cta-seats, .cta-included { text-align: center; }
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      text-align: center; padding: 28px 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(240,244,255,0.2);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="/" class="nav-logo-block">
+      <span>DELTA</span>
+      <span>EDUCATION.</span>
+    </a>
+    <a href="#" class="nav-elite-logo">Elite <span>Batch</span></a>
+
+    <div class="nav-right">
+      <span class="nav-tag">Elite Track</span>
+      <a href="javascript:history.back()" class="nav-back">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        <span>All Courses</span>
+      </a>
+      <a href="/" class="nav-home-mobile">
+        <span>Back to Home</span>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-inner">
+
+      <div class="hero-left" style="animation: fadeUp 0.8s ease both;">
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          The 1-Stop NSET Solution
+        </div>
+
+        <h1 class="hero-title">
+          Built to get you<br>
+          <span class="hero-title-accent">into SST.</span>
+        </h1>
+
+        <p class="hero-desc">
+          Elite Track is the most complete NSET preparation program — covering every topic, every mock test, and every interview round. One course. Full end-to-end guidance.
+        </p>
+
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <div class="hero-stat-value">33+</div>
+            <div class="hero-stat-label">Video Lectures</div>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-value">15</div>
+            <div class="hero-stat-label">Mock Tests</div>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-value">3</div>
+            <div class="hero-stat-label">Mock Interviews</div>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-value">24/7</div>
+            <div class="hero-stat-label">Doubt Support</div>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a href="#enroll" class="btn-enroll">Enroll Now</a>
+          <div class="hero-price-hint">
+            <span class="strike">₹10,000</span>
+            <span class="current-price">₹9,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Card -->
+      <div class="hero-card reveal" style="transition-delay:0.15s">
+        <div class="hero-card-title">What's included</div>
+        <ul class="hero-card-list">
+          <li>
+            <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+            33+ concept & problem-solving lectures (Math + LR)
+          </li>
+          <li>
+            <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+            Topic-wise practice sheets (15–20 questions each)
+          </li>
+          <li>
+            <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+            15 structured mock tests — 5 exact NSET replicas
+          </li>
+          <li>
+            <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+            2 live sessions every week + 24/7 doubt support
+          </li>
+          <li>
+            <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+            3 mock interviews + full interview prep module
+          </li>
+          <li>
+            <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+            Exclusive peer community + mentor access
+          </li>
+        </ul>
+        <div class="hero-card-divider"></div>
+        <div class="hero-card-price-block">
+          <div class="hero-card-price-label">Course Fee</div>
+          <div class="hero-card-price-row">
+            <div class="hero-card-original">₹10,000</div>
+            <div class="hero-card-current">₹9,000</div>
+          </div>
+          <a href="#enroll" class="btn-enroll-card">Enroll in Elite Track</a>
+          <div class="hero-card-note">Limited seats per batch</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── WHAT'S INCLUDED ── -->
+  <div class="section reveal" style="padding-top: 0;">
+    <div class="section-label">Curriculum</div>
+    <h2 class="section-heading">Everything inside Elite Track.</h2>
+    <p class="section-sub">A structured system — every module is designed to take you one step closer to your SST offer letter.</p>
+
+    <div class="modules-grid">
+
+      <!-- 1 -->
+      <div class="module-item reveal">
+        <div class="module-number">01 · Mathematics</div>
+        <div class="module-title">From Basics to NSET-Level Mastery</div>
+        <div class="module-desc">
+          12+ concept lectures covering every testable topic — from Number Theory and PnC to Probability — with 5+ dedicated problem-solving sessions focused on high-intent NSET patterns.
+        </div>
+        <div class="module-tags">
+          <span class="module-tag">PnC</span>
+          <span class="module-tag">Probability</span>
+          <span class="module-tag">Number Theory</span>
+          <span class="module-tag">12+ Lectures</span>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="module-item reveal" style="transition-delay:0.05s">
+        <div class="module-number">02 · Logical Reasoning</div>
+        <div class="module-title">NSET-Pattern Focused LR Preparation</div>
+        <div class="module-desc">
+          16+ concept lectures and 5+ problem-solving sessions — built specifically around the LR topics that appear most in NSET, so no time is wasted on irrelevant content.
+        </div>
+        <div class="module-tags">
+          <span class="module-tag">16+ Lectures</span>
+          <span class="module-tag">Pattern-Based</span>
+          <span class="module-tag">NSET Aligned</span>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="module-item reveal" style="transition-delay:0.1s">
+        <div class="module-number">03 · Practice Sheets</div>
+        <div class="module-title">Reinforce Every Concept You Learn</div>
+        <div class="module-desc">
+          A dedicated practice sheet for every topic — each one contains 15–20 questions covering all patterns tested in NSET. Designed to build accuracy and speed together.
+        </div>
+        <div class="module-tags">
+          <span class="module-tag">15–20 Q/sheet</span>
+          <span class="module-tag">All Patterns</span>
+          <span class="module-tag">Topic-wise</span>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="module-item reveal" style="transition-delay:0.15s">
+        <div class="module-number">04 · Mock Test Series</div>
+        <div class="module-title">Test Like It's the Real Exam</div>
+        <div class="module-desc">
+          15 structured mocks: 10 progressive concept-building tests, and 5 full-length papers that exactly replicate the NSET format — same structure, difficulty, and timing.
+        </div>
+        <div class="module-tags">
+          <span class="module-tag">10 Concept Mocks</span>
+          <span class="module-tag">5 NSET Replicas</span>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="module-item reveal" style="transition-delay:0.2s">
+        <div class="module-number">05 · Live Sessions</div>
+        <div class="module-title">Zero Doubts Left Unanswered</div>
+        <div class="module-desc">
+          Two live sessions every week — structured around doubt resolution and high-value question walkthroughs based on our ongoing NSET analysis. Consistent, focused, impactful.
+        </div>
+        <div class="module-tags">
+          <span class="module-tag">2/Week</span>
+          <span class="module-tag">Live & Recorded</span>
+          <span class="module-tag">24/7 Doubt Chat</span>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="module-item reveal" style="transition-delay:0.25s">
+        <div class="module-number">06 · Community</div>
+        <div class="module-title">Peer Learning at its Best</div>
+        <div class="module-desc">
+          An exclusive WhatsApp community where you connect with driven peers, get unfiltered insights on NSET and SST, and grow together. Real conversations, not just notifications.
+        </div>
+        <div class="module-tags">
+          <span class="module-tag">Peer Learning</span>
+          <span class="module-tag">Mentor Access</span>
+          <span class="module-tag">Exclusive Access</span>
+        </div>
+      </div>
+
+      <!-- 7 · Full width -->
+      <div class="module-item wide reveal" style="transition-delay:0.3s; border-top: 1px solid rgba(0,86,210,0.2); background: rgba(0,86,210,0.05);">
+        <div class="module-body">
+          <div class="module-number" style="color: var(--light);">07 · Interview Preparation</div>
+          <div class="module-title" style="font-size: 1.1rem;">Prepared for every round — not just NSET.</div>
+          <div class="module-desc">
+            SST admission doesn't end at NSET. We prepare you end-to-end: AI interview, Round 2, and any technical rounds. Our Interview Prep module includes video lectures covering everything that creates impact — from communication to depth of thinking.
+          </div>
+        </div>
+        <div class="module-extras">
+          <ul class="hero-card-list" style="margin-top: 0; padding-top: 0;">
+            <li>
+              <div class="check" style="border-color: rgba(77,144,255,0.5);">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              3 mock interviews in a real SST-like environment
+            </li>
+            <li>
+              <div class="check" style="border-color: rgba(77,144,255,0.5);">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              Detailed personalised feedback after each session
+            </li>
+            <li>
+              <div class="check" style="border-color: rgba(77,144,255,0.5);">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              Interview Prep Module — video lectures, do's & don'ts, impact factors
+            </li>
+            <li>
+              <div class="check" style="border-color: rgba(77,144,255,0.5);">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              Mentor-reviewed assignments to sharpen your thinking
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── WHO ── -->
+  <div class="section reveal">
+    <div class="section-label">Perfect Fit</div>
+    <h2 class="section-heading">Who is the perfect fit<br>for this course?</h2>
+    <p class="section-sub">If you find yourself in any of these, Elite Track was built for you.</p>
+    <div class="who-grid">
+      <div class="who-item reveal">
+        <div class="who-index">01</div>
+        <div class="who-text">You are looking for a comprehensive, one-stop solution that covers every aspect of NSET preparation without the need to scour multiple sources for content or guidance.</div>
+      </div>
+      <div class="who-item reveal" style="transition-delay:0.05s">
+        <div class="who-index">02</div>
+        <div class="who-text">You want to master concepts from their fundamental roots, ensuring a deep understanding that allows you to tackle even the most challenging high-intent patterns under pressure.</div>
+      </div>
+      <div class="who-item reveal" style="transition-delay:0.1s">
+        <div class="who-index">03</div>
+        <div class="who-text">You value consistency and accountability, and you want a structured environment with live mentorship and a focused community to keep you on track throughout your journey.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BOTTOM CTA ── -->
+  <section class="cta-section" id="enroll">
+    <div class="cta-inner">
+      <div class="cta-eyebrow">Enroll Today</div>
+      <h2>Your SST offer letter<br>starts <em>here.</em></h2>
+      <p>Concepts. Practice. Mock Tests. Live Sessions. Interview Prep. Everything that gets you into SST, in one place.</p>
+
+      <div class="cta-card" style="flex-direction:column;align-items:center;text-align:center;">
+        <div>
+          <div class="cta-price-label">Elite Track — Full Access</div>
+          <div class="cta-price-row" style="justify-content:center;">
+            <span class="cta-strike">₹10,000</span>
+            <span class="cta-price">₹9,000</span>
+          </div>
+          <div class="cta-seats">Limited seats per batch</div>
+        </div>
+        <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;">
+          <a href="#" class="btn-cta" id="buy-btn" style="width:100%;max-width:360px;justify-content:center;">Enroll in Elite Track →</a>
+          <div class="cta-included" style="text-align:center;">Full curriculum · 15 Mock Tests · Interview Prep · Live Sessions · Community Access</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    © 2026 Delta Education · All Rights Reserved · Made for future leaders
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Buy CTA
+    document.getElementById('buy-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      // Wire up payment link here
+    });
+  </script>
+
+</body>
+</html>
