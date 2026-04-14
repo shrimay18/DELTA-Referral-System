@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../shared/enrollment-modal.css" />
   <style>
 
     :root {
@@ -576,10 +577,10 @@
         </div>
 
         <div class="hero-actions">
-          <a href="#enroll" class="btn-enroll">Enroll Now</a>
+          <a href="#" onclick="event.preventDefault();openEnrollModal('elite')" class="btn-enroll">Enroll Now</a>
           <div class="hero-price-hint">
             <span class="strike">₹10,000</span>
-            <span class="current-price">₹9,000</span>
+            <span class="current-price">₹8,999</span>
           </div>
         </div>
       </div>
@@ -618,9 +619,9 @@
           <div class="hero-card-price-label">Course Fee</div>
           <div class="hero-card-price-row">
             <div class="hero-card-original">₹10,000</div>
-            <div class="hero-card-current">₹9,000</div>
+            <div class="hero-card-current">₹8,999</div>
           </div>
-          <a href="#enroll" class="btn-enroll-card">Enroll in Elite Track</a>
+          <a href="#" onclick="event.preventDefault();openEnrollModal('elite')" class="btn-enroll-card">Enroll in Elite Track</a>
           <div class="hero-card-note">Limited seats per batch</div>
         </div>
       </div>
@@ -799,12 +800,12 @@
           <div class="cta-price-label">Elite Track — Full Access</div>
           <div class="cta-price-row" style="justify-content:center;">
             <span class="cta-strike">₹10,000</span>
-            <span class="cta-price">₹9,000</span>
+            <span class="cta-price">₹8,999</span>
           </div>
           <div class="cta-seats">Limited seats per batch</div>
         </div>
         <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;">
-          <a href="#" class="btn-cta" id="buy-btn" style="width:100%;max-width:360px;justify-content:center;">Enroll in Elite Track →</a>
+          <a href="#" onclick="event.preventDefault();openEnrollModal('elite')" class="btn-cta" id="buy-btn" style="width:100%;max-width:360px;justify-content:center;">Enroll in Elite Track →</a>
           <div class="cta-included" style="text-align:center;">Full curriculum · 15 Mock Tests · Interview Prep · Live Sessions · Community Access</div>
         </div>
       </div>
@@ -828,13 +829,8 @@
     }, { threshold: 0.08 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // Buy CTA
-    document.getElementById('buy-btn').addEventListener('click', function(e) {
-      e.preventDefault();
-      // Wire up payment link here
-    });
   </script>
+  <script src="../shared/enrollment-modal.js"></script>
 
 </body>
 </html>

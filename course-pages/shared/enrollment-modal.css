@@ -1,0 +1,280 @@
+/* ── ENROLLMENT MODAL ────────────────────────────────────────── */
+
+/* Overlay */
+.em-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(6, 13, 31, 0.85);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.em-overlay.em-open {
+  opacity: 1; pointer-events: all;
+}
+
+/* Modal box */
+.em-modal {
+  position: relative;
+  background: #0c1630;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,86,210,0.15);
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.28s ease;
+}
+.em-overlay.em-open .em-modal {
+  transform: translateY(0) scale(1);
+}
+
+/* Scrollbar inside modal */
+.em-modal::-webkit-scrollbar { width: 4px; }
+.em-modal::-webkit-scrollbar-track { background: transparent; }
+.em-modal::-webkit-scrollbar-thumb { background: rgba(0,86,210,0.4); border-radius: 4px; }
+
+/* Close button */
+.em-close {
+  position: absolute; top: 18px; right: 18px; z-index: 2;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(240,244,255,0.5);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+.em-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+/* Progress bar */
+.em-progress {
+  display: flex; align-items: center; gap: 0;
+  padding: 28px 28px 0;
+}
+.em-step-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  flex: 1;
+}
+.em-step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.7rem;
+  border: 2px solid rgba(255,255,255,0.1);
+  color: rgba(240,244,255,0.3);
+  background: transparent;
+  transition: all 0.3s ease;
+  position: relative; z-index: 1;
+}
+.em-step-dot.active { border-color: #0056d2; background: #0056d2; color: #fff; }
+.em-step-dot.done { border-color: #0056d2; background: rgba(0,86,210,0.15); color: #4d90ff; }
+.em-step-label {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: rgba(240,244,255,0.25);
+  text-align: center; white-space: nowrap;
+  transition: color 0.3s;
+}
+.em-step-item.active .em-step-label { color: #4d90ff; }
+.em-step-item.done .em-step-label { color: rgba(77,144,255,0.5); }
+
+.em-step-line {
+  height: 1px; flex: 1; background: rgba(255,255,255,0.08);
+  margin-bottom: 18px;
+  transition: background 0.3s;
+}
+.em-step-line.done { background: rgba(0,86,210,0.5); }
+
+/* Modal inner */
+.em-body { padding: 28px 28px 32px; }
+
+/* Heading */
+.em-heading {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.35rem; font-weight: 900;
+  color: #fff; letter-spacing: -0.4px; margin-bottom: 6px;
+}
+.em-sub {
+  font-size: 0.83rem; color: rgba(240,244,255,0.4);
+  font-weight: 500; margin-bottom: 24px; line-height: 1.5;
+}
+
+/* Form fields */
+.em-field {
+  margin-bottom: 16px;
+}
+.em-field label {
+  display: block; font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(240,244,255,0.45); margin-bottom: 7px;
+}
+.em-field input,
+.em-field select,
+.em-field textarea {
+  width: 100%; padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 10px;
+  color: #f0f4ff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  -webkit-appearance: none;
+}
+.em-field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='rgba(240,244,255,0.3)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  background-size: 16px; padding-right: 40px;
+  cursor: pointer;
+}
+.em-field select option { background: #0c1630; }
+.em-field input:focus, .em-field select:focus, .em-field textarea:focus {
+  border-color: rgba(0,86,210,0.6); background: rgba(0,86,210,0.05);
+}
+.em-field input.error, .em-field select.error { border-color: rgba(220,60,60,0.6); }
+.em-field-error {
+  font-size: 0.73rem; color: #f87171; font-weight: 600;
+  margin-top: 5px; display: none;
+}
+.em-field-error.show { display: block; }
+
+.em-field-hint {
+  font-size: 0.72rem; color: rgba(240,244,255,0.3);
+  font-weight: 500; margin-top: 5px;
+}
+
+/* Referral code section */
+.em-referral-section {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 16px; margin-top: 8px;
+}
+.em-referral-label {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: rgba(240,244,255,0.4); margin-bottom: 8px;
+}
+.em-referral-hint { font-size: 0.72rem; color: rgba(240,244,255,0.28); margin-bottom: 10px; line-height: 1.5; }
+
+/* Referral code validation badge */
+.em-code-result {
+  display: none; margin-top: 8px;
+  padding: 8px 14px; border-radius: 8px;
+  font-size: 0.8rem; font-weight: 700; align-items: center; gap: 8px;
+}
+.em-code-result.show { display: flex; }
+.em-code-result.valid { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #4ade80; }
+.em-code-result.invalid { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #f87171; }
+
+/* Button */
+.em-btn {
+  width: 100%; padding: 14px;
+  background: #0056d2; color: #fff;
+  font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.92rem;
+  border: none; border-radius: 10px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(0,86,210,0.35);
+  letter-spacing: 0.02em;
+  margin-top: 20px;
+}
+.em-btn:hover { background: #0067f5; transform: translateY(-1px); box-shadow: 0 8px 28px rgba(0,86,210,0.5); }
+.em-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.em-btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(240,244,255,0.5);
+  box-shadow: none;
+  margin-top: 10px;
+}
+.em-btn-secondary:hover { background: rgba(255,255,255,0.05); color: #fff; transform: none; box-shadow: none; }
+
+/* Spinner */
+.em-spinner {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  animation: em-spin 0.7s linear infinite;
+  display: none;
+}
+.em-spinner.show { display: block; }
+@keyframes em-spin { to { transform: rotate(360deg); } }
+
+/* ── STEP 3: Payment QR ── */
+.em-qr-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 24px;
+  margin-bottom: 20px; text-align: center;
+}
+.em-qr-canvas-wrap {
+  background: #fff; border-radius: 12px;
+  padding: 14px; margin-bottom: 14px;
+  display: inline-flex;
+}
+.em-qr-price-badge {
+  font-family: 'Montserrat', sans-serif; font-weight: 900;
+  font-size: 1.5rem; color: #fff; margin-bottom: 4px;
+}
+.em-qr-price-badge span {
+  font-size: 0.75rem; color: rgba(240,244,255,0.4);
+  font-weight: 600; text-decoration: line-through; margin-right: 8px;
+}
+.em-qr-upi {
+  font-size: 0.8rem; color: rgba(240,244,255,0.4); font-weight: 500; letter-spacing: 0.03em;
+}
+.em-qr-discount-badge {
+  display: inline-block; background: rgba(34,197,94,0.12);
+  border: 1px solid rgba(34,197,94,0.25);
+  color: #4ade80; font-size: 0.72rem; font-weight: 700;
+  padding: 3px 12px; border-radius: 20px; margin-bottom: 8px;
+}
+
+/* Payment helper note */
+.em-payment-note {
+  background: rgba(0,86,210,0.08);
+  border: 1px solid rgba(0,86,210,0.2);
+  border-radius: 10px; padding: 14px 16px;
+  font-size: 0.82rem; color: rgba(240,244,255,0.6); line-height: 1.6;
+  margin-bottom: 20px;
+}
+.em-payment-note strong { color: #fff; }
+.em-payment-note a { color: #4d90ff; text-decoration: none; }
+.em-payment-note a:hover { text-decoration: underline; }
+
+/* ── CONFIRMATION ── */
+.em-confirm {
+  text-align: center; padding: 20px 0 8px;
+}
+.em-confirm-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(34,197,94,0.12); border: 2px solid rgba(34,197,94,0.3);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 1.8rem;
+}
+.em-confirm h3 {
+  font-family: 'Montserrat', sans-serif; font-size: 1.3rem;
+  font-weight: 900; color: #fff; margin-bottom: 10px; letter-spacing: -0.3px;
+}
+.em-confirm p {
+  font-size: 0.88rem; color: rgba(240,244,255,0.5); line-height: 1.7; margin-bottom: 10px;
+}
+.em-confirm .em-btn { margin-top: 24px; }
+
+/* Inline global error */
+.em-global-error {
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+  color: #f87171; border-radius: 8px; padding: 10px 14px;
+  font-size: 0.8rem; font-weight: 600; margin-bottom: 16px;
+  display: none;
+}
+.em-global-error.show { display: block; }
+
+@media(max-width: 540px) {
+  .em-modal { border-radius: 16px; }
+  .em-progress { padding: 22px 20px 0; }
+  .em-body { padding: 22px 20px 28px; }
+}

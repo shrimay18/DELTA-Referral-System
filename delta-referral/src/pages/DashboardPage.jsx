@@ -95,7 +95,11 @@ const DashboardPage = () => {
   const { session, data, loading, fetchError, logout, retry } = useDashboard();
 
   const referralCode = data?.referralCode ?? session?.referralCode ?? '—';
-  const isApproved   = data?.status === 'approved';
+
+  // Accept both 'approved' and 'active' — existing sheet entries use 'Active'
+  const liveStatus = (data?.status ?? session?.status ?? '').toLowerCase();
+  const isApproved = liveStatus === 'approved' || liveStatus === 'active';
+
 
   const stats = [
     { label: 'Total Referrals', value: data?.totalReferrals ?? 0, icon: UserGroupIcon },
