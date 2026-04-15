@@ -34,7 +34,7 @@ const COURSE_CONFIG = {
 };
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxVu2JixgtMQV15RrKm9cZ0BwRDzq4yLRdlyp8XiHw5eOS2hNqR952NMsHGeTn8Hx96JQ/exec';
-const WHATSAPP_COMMUNITY = 'https://chat.whatsapp.com/Iu1h7eC00CG47JCQcpdp7O';
+const WHATSAPP_COMMUNITY = 'https://chat.whatsapp.com/JeHuNDd6PfTEiWuC4eVr0R';
 const PAYMENT_WHATSAPP   = '+919901716335';
 
 // ── STATE ──────────────────────────────────────────────────────────────────

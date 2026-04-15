@@ -12,7 +12,7 @@
 const CACHE = CacheService.getScriptCache();
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────
-const WHATSAPP_LINK  = 'https://chat.whatsapp.com/Iu1h7eC00CG47JCQcpdp7O';
+const WHATSAPP_LINK  = 'https://chat.whatsapp.com/JeHuNDd6PfTEiWuC4eVr0R';
 const SUPPORT_EMAIL  = 'support@thedelta.co.in';
 const SUPPORT_PHONE  = '9322385170';
 const ADMIN_WHATSAPP = '+91 93223 85170';
