@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delta Education — All Courses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:   #001e62;
+      --surface:#0c1630;
+      --blue:   #0056d2;
+      --text:   #f0f4ff;
+      --muted:  rgba(240,244,255,0.6);
+      --border: rgba(255,255,255,0.1);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .logo-block {
+      display: inline-flex;
+      flex-direction: column;
+      background: var(--blue);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 40px;
+      text-align: left;
+    }
+
+    .logo-block span {
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      line-height: 1.25;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    p.subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 60px;
+    }
+
+    .links-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .course-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(77,144,255,0.4);
+      box-shadow: 0 12px 30px rgba(0,86,210,0.2);
+    }
+
+    .course-info {
+      text-align: left;
+    }
+
+    .course-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .course-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .arrow {
+      color: var(--blue);
+      background: rgba(77,144,255,0.1);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .course-card:hover .arrow {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .arrow svg {
+      width: 20px;
+      height: 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="logo-block">
+      <span>DELTA</span>
+      <span>EDUCATION.</span>
+    </div>
+
+    <h1>Select a Track</h1>
+    <p class="subtitle">Complete intensive prep programs for NSET & SST.</p>
+
+    <div class="links-grid">
+      
+      <a href="./course-pages/elite/index.html" class="course-card">
+        <div class="course-info">
+          <div class="course-title">Elite Track</div>
+          <div class="course-desc">Full access: Concepts, Mocks & Interviews</div>
+        </div>
+        <div class="arrow">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </a>
+
+      <a href="./course-pages/achiever/index.html" class="course-card">
+        <div class="course-info">
+          <div class="course-title">Achiever Track</div>
+          <div class="course-desc">Intensive Test Series + Live Mentorship</div>
+        </div>
+        <div class="arrow">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </a>
+
+      <a href="./course-pages/elevate/index.html" class="course-card">
+        <div class="course-info">
+          <div class="course-title">Elevate Track</div>
+          <div class="course-desc">Interview Preparation Intensive</div>
+        </div>
+        <div class="arrow">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+</body>
+</html>
