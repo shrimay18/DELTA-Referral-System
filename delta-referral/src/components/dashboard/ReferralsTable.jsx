@@ -20,9 +20,9 @@ const ReferralsTable = ({ referrals }) => (
         </p>
       </div>
     ) : (
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto overflow-y-auto max-h-[400px]">
         <table className="w-full text-[13px]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-          <thead>
+          <thead className="sticky top-0 bg-[#00183d] z-10">
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               {['Student', 'Course', 'Status', 'Date', 'Amount'].map((h) => (
                 <th

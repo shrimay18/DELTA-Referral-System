@@ -8,15 +8,15 @@
 const CACHE = CacheService.getScriptCache();
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────
-const WHATSAPP_LINK  = 'https://chat.whatsapp.com/Iu1h7eC00CG47JCQcpdp7O';
-const SUPPORT_EMAIL  = 'support@thedelta.co.in';
+const WHATSAPP_LINK = 'https://chat.whatsapp.com/Iu1h7eC00CG47JCQcpdp7O';
+const SUPPORT_EMAIL = 'support@thedelta.co.in';
 const ADMIN_WHATSAPP = '+91 99017 16335';
 
 // ─── ROUTER ────────────────────────────────────────────────────────────────
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
-    const ss    = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName('Referrer');
 
     if (!sheet) return response({ success: false, error: 'Referrer sheet not found' });
@@ -86,13 +86,13 @@ function doPost(e) {
       for (let i = 1; i < rows.length; i++) {
         if (rows[i][3] === data.referralCode) {
           const totalEarned = Number(rows[i][9]) || 0;
-          const totalPaid   = Number(rows[i][10]) || 0;
+          const totalPaid = Number(rows[i][10]) || 0;
           userData = {
-            status:         rows[i][7].toString().toLowerCase(),
+            status: rows[i][7].toString().toLowerCase(),
             totalReferrals: rows[i][8],
-            totalEarned:    totalEarned,
-            totalPaid:      totalPaid,
-            amountDue:      totalEarned - totalPaid
+            totalEarned: totalEarned,
+            totalPaid: totalPaid,
+            amountDue: totalEarned - totalPaid
           };
           break;
         }
@@ -179,17 +179,17 @@ function submitEnrollment(ss, data) {
 
   customerSheet.appendRow([
     timestamp,
-    data.name        || '',
-    data.email       || '',
-    data.phone       || '',
+    data.name || '',
+    data.email || '',
+    data.phone || '',
     data.courseLabel || data.course || '',
-    data.source      || '',
+    data.source || '',
     data.referralCode || '',
     data.referrerName || '',
-    data.txnId       || '',
-    data.amountPaid  || '',
+    data.txnId || '',
+    data.amountPaid || '',
     data.discountApplied || 'No',
-    data.finalPrice  || '',
+    data.finalPrice || '',
     'Pending',   // Admin will change this to "Approved" via the menu
     ''
   ]);
@@ -207,9 +207,9 @@ function approveEnrollment(ss, referrerSheet, data) {
   if (!rowNum || rowNum < 2) return { success: false, message: 'Invalid row number' };
 
   const rowValues = customerSheet.getRange(rowNum, 1, 1, 14).getValues()[0];
-  const studentName  = rowValues[1];
+  const studentName = rowValues[1];
   const studentEmail = rowValues[2];
-  const course       = rowValues[4];
+  const course = rowValues[4];
   const referralCode = rowValues[6];
 
   // 1. Mark as Approved
@@ -291,9 +291,9 @@ function onOpen() {
 }
 
 function approveSelectedRow() {
-  const ui       = SpreadsheetApp.getUi();
-  const ss       = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet    = ss.getActiveSheet();
+  const ui = SpreadsheetApp.getUi();
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getActiveSheet();
 
   if (sheet.getName() !== 'OUR CUSTOMER') {
     ui.alert('⚠️ Please switch to the "OUR CUSTOMER" sheet first, then click on the row to approve.');
@@ -362,7 +362,7 @@ function doGet(e) {
         }
       }
     }
-    
+
     if (!sheet) return response({ valid: false, error: 'Referrer sheet not found' });
     const result = validateReferralCode(sheet, e.parameter.referralCode || '');
     return response(result);

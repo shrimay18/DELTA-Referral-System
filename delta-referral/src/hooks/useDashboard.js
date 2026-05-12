@@ -31,7 +31,7 @@ export const useDashboard = () => {
             status: r.status,
             date:   r.date,
             amount: r.amount,
-          })),
+          })).reverse(),
         });
         updateSession({ status: json.status });
       } else {

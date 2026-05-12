@@ -12,40 +12,40 @@
 const CACHE = CacheService.getScriptCache();
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────
-const WHATSAPP_LINK  = 'https://chat.whatsapp.com/JeHuNDd6PfTEiWuC4eVr0R';
-const SUPPORT_EMAIL  = 'support@thedelta.co.in';
-const SUPPORT_PHONE  = '9322385170';
+const WHATSAPP_LINK = 'https://chat.whatsapp.com/JeHuNDd6PfTEiWuC4eVr0R';
+const SUPPORT_EMAIL = 'support@thedelta.co.in';
+const SUPPORT_PHONE = '9322385170';
 const ADMIN_WHATSAPP = '+91 93223 85170';
-const OWNER_EMAIL    = 'shrimaysomani18@gmail.com, sureshsomani12345@gmail.com';
+const OWNER_EMAIL = 'shrimaysomani18@gmail.com, sureshsomani12345@gmail.com';
 
 // ─── STATUS COLORS ─────────────────────────────────────────────────────────
-const COLOR_PENDING  = { bg: '#f4cccc', fg: '#7f0000', fw: 'bold' }; // Red
+const COLOR_PENDING = { bg: '#f4cccc', fg: '#7f0000', fw: 'bold' }; // Red
 const COLOR_APPROVED = { bg: '#d9ead3', fg: '#274e13', fw: 'bold' }; // Green
 const COLOR_REJECTED = { bg: '#434343', fg: '#ffffff', fw: 'bold' }; // Black
-const COLOR_NONE     = { bg: '#ffffff', fg: '#000000', fw: 'normal' };
+const COLOR_NONE = { bg: '#ffffff', fg: '#000000', fw: 'normal' };
 
 // ─── REFERRER SHEET COLUMN INDICES (0-based) ───────────────────────────────
-const COL_NAME          = 0;
-const COL_EMAIL         = 1;
-const COL_PASSWORD      = 2;
+const COL_NAME = 0;
+const COL_EMAIL = 1;
+const COL_PASSWORD = 2;
 const COL_REFERRAL_CODE = 3;
-const COL_TYPE          = 4;
-const COL_CATEGORY      = 5;
-const COL_UPI           = 6;
-const COL_APPROVALS     = 7;
-const COL_TOTAL_REFS    = 8;
-const COL_TOTAL_EARNED  = 9;
-const COL_TOTAL_PAID    = 10;
-const COL_ELITE_INC     = 11;
-const COL_ACHIEVER_INC  = 12;
-const COL_ELEVATE_INC   = 13;
-const COL_STATUS        = 14;
+const COL_TYPE = 4;
+const COL_CATEGORY = 5;
+const COL_UPI = 6;
+const COL_APPROVALS = 7;
+const COL_TOTAL_REFS = 8;
+const COL_TOTAL_EARNED = 9;
+const COL_TOTAL_PAID = 10;
+const COL_ELITE_INC = 11;
+const COL_ACHIEVER_INC = 12;
+const COL_ELEVATE_INC = 13;
+const COL_STATUS = 14;
 
 // ─── ROUTER ────────────────────────────────────────────────────────────────
 function doPost(e) {
   try {
-    const data  = JSON.parse(e.postData.contents);
-    const ss    = SpreadsheetApp.getActiveSpreadsheet();
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName('Referrer');
 
     if (!sheet) return response({ success: false, error: 'Referrer sheet not found' });
@@ -96,9 +96,9 @@ function doPost(e) {
           return response({
             success: true,
             user: {
-              name:         rows[i][COL_NAME],
+              name: rows[i][COL_NAME],
               referralCode: rows[i][COL_REFERRAL_CODE],
-              status:       normalizeStatus(rows[i][COL_STATUS])
+              status: normalizeStatus(rows[i][COL_STATUS])
             }
           });
         }
@@ -113,13 +113,13 @@ function doPost(e) {
       for (let i = 1; i < rows.length; i++) {
         if (rows[i][COL_REFERRAL_CODE] === data.referralCode) {
           const totalEarned = Number(rows[i][COL_TOTAL_EARNED]) || 0;
-          const totalPaid   = Number(rows[i][COL_TOTAL_PAID])   || 0;
+          const totalPaid = Number(rows[i][COL_TOTAL_PAID]) || 0;
           userData = {
-            status:         normalizeStatus(rows[i][COL_STATUS]),
+            status: normalizeStatus(rows[i][COL_STATUS]),
             totalReferrals: rows[i][COL_TOTAL_REFS],
-            totalEarned:    totalEarned,
-            totalPaid:      totalPaid,
-            amountDue:      totalEarned - totalPaid
+            totalEarned: totalEarned,
+            totalPaid: totalPaid,
+            amountDue: totalEarned - totalPaid
           };
           break;
         }
@@ -164,7 +164,7 @@ function doPost(e) {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         CACHE.put('student_' + data.email, otp, 600);
         MailApp.sendEmail({
-          to:      data.email,
+          to: data.email,
           subject: 'Delta Education — Verify Your Email',
           body:
             'Dear ' + (data.name || 'Applicant') + ',\n\n' +
@@ -182,7 +182,7 @@ function doPost(e) {
     if (data.action === 'verifyStudentOTP') {
       if (!data.email || !data.otp) return response({ success: false, error: 'Email and OTP required' });
       const saved = CACHE.get('student_' + data.email);
-      if (!saved)                        return response({ success: false, error: 'OTP expired. Please request a new one.' });
+      if (!saved) return response({ success: false, error: 'OTP expired. Please request a new one.' });
       if (saved !== data.otp.toString()) return response({ success: false, error: 'Incorrect OTP. Please try again.' });
       CACHE.remove('student_' + data.email);
       return response({ success: true });
@@ -210,10 +210,10 @@ function onEditTrigger(e) {
     _applyStatusColor(sheet, row, newStatus);
 
     if (newStatus === 'Approved') {
-      const rowData      = sheet.getRange(row, 1, 1, 14).getValues()[0];
-      const studentName  = rowData[1];
+      const rowData = sheet.getRange(row, 1, 1, 14).getValues()[0];
+      const studentName = rowData[1];
       const studentEmail = rowData[2];
-      const course       = rowData[4];
+      const course = rowData[4];
       const referralCode = rowData[6];
 
       sendWelcomeEmail(studentEmail, studentName, course);
@@ -233,7 +233,7 @@ function onEditTrigger(e) {
 // ─── APPLY STATUS COLOR ─────────────────────────────────────────────────────
 function _applyStatusColor(sheet, row, status) {
   const cell = sheet.getRange(row, 13);
-  const s    = status.toLowerCase();
+  const s = status.toLowerCase();
   if (s === 'pending') {
     cell.setBackground(COLOR_PENDING.bg).setFontColor(COLOR_PENDING.fg).setFontWeight(COLOR_PENDING.fw);
   } else if (s === 'approved') {
@@ -267,17 +267,17 @@ function submitEnrollment(ss, data) {
 
   customerSheet.appendRow([
     timestamp,
-    data.name            || '',
-    data.email           || '',
-    data.phone           || '',
-    data.courseLabel     || data.course || '',
-    data.source          || '',
-    data.referralCode    || '',
-    data.referrerName    || '',
-    data.txnId           || '',
-    data.amountPaid      || '',
+    data.name || '',
+    data.email || '',
+    data.phone || '',
+    data.courseLabel || data.course || '',
+    data.source || '',
+    data.referralCode || '',
+    data.referrerName || '',
+    data.txnId || '',
+    data.amountPaid || '',
     data.discountApplied || 'No',
-    data.finalPrice      || '',
+    data.finalPrice || '',
     '',   // Status — set explicitly below
     ''    // Admin Notes
   ]);
@@ -293,12 +293,12 @@ function submitEnrollment(ss, data) {
 
   // Alert owner that a new student is waiting for approval
   sendNewEnrollmentAlert(
-    data.name        || 'Unknown',
-    data.email       || '',
-    data.phone       || '',
+    data.name || 'Unknown',
+    data.email || '',
+    data.phone || '',
     data.courseLabel || data.course || '',
-    data.txnId       || '',
-    data.amountPaid  || ''
+    data.txnId || '',
+    data.amountPaid || ''
   );
 
   return { success: true };
@@ -315,7 +315,7 @@ function _applyStatusDropdown(sheet, rowNum) {
 
 // ─── APPLY DROPDOWNS + COLORS TO ALL EXISTING ROWS ─────────────────────────
 function applyDropdownsToAllRows() {
-  const ss    = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName('OUR CUSTOMER');
   if (!sheet) { SpreadsheetApp.getUi().alert('OUR CUSTOMER sheet not found.'); return; }
   const lastRow = sheet.getLastRow();
@@ -336,10 +336,10 @@ function approveEnrollment(ss, referrerSheet, data) {
   const rowNum = parseInt(data.row);
   if (!rowNum || rowNum < 2) return { success: false, message: 'Invalid row number' };
 
-  const rowValues    = customerSheet.getRange(rowNum, 1, 1, 14).getValues()[0];
-  const studentName  = rowValues[1];
+  const rowValues = customerSheet.getRange(rowNum, 1, 1, 14).getValues()[0];
+  const studentName = rowValues[1];
   const studentEmail = rowValues[2];
-  const course       = rowValues[4];
+  const course = rowValues[4];
   const referralCode = rowValues[6];
 
   customerSheet.getRange(rowNum, 13).setValue('Approved');
@@ -357,8 +357,8 @@ function approveEnrollment(ss, referrerSheet, data) {
 // TotalPaid is left unchanged — admin updates it manually when paying out.
 function updateReferrerStats(sheet, referralCode, course) {
   const values = sheet.getDataRange().getValues();
-  const code   = (referralCode || '').trim().toUpperCase();
-  const c      = (course || '').toLowerCase();
+  const code = (referralCode || '').trim().toUpperCase();
+  const c = (course || '').toLowerCase();
 
   for (let i = 1; i < values.length; i++) {
     const sheetCode = (values[i][COL_REFERRAL_CODE] || '').toString().trim().toUpperCase();
@@ -381,7 +381,7 @@ function updateReferrerStats(sheet, referralCode, course) {
     }
 
     if (incentiveCol !== null) {
-      const incentiveAmt  = parseFloat(values[i][incentiveCol]) || 0;
+      const incentiveAmt = parseFloat(values[i][incentiveCol]) || 0;
       const currentEarned = parseFloat(values[i][COL_TOTAL_EARNED]) || 0;
       if (incentiveAmt > 0) {
         sheet.getRange(i + 1, COL_TOTAL_EARNED + 1).setValue(currentEarned + incentiveAmt);
@@ -416,9 +416,9 @@ function sendWelcomeEmail(toEmail, studentName, course) {
     'Happy learning.\n\n' +
     'Regards,\nTeam Delta Education\n' + SUPPORT_EMAIL;
 
-  const accent = course.toLowerCase().indexOf('elite')   !== -1 ? '#001e62'
-               : course.toLowerCase().indexOf('achiev')  !== -1 ? '#0a4d3c'
-               : '#1a237e';
+  const accent = course.toLowerCase().indexOf('elite') !== -1 ? '#001e62'
+    : course.toLowerCase().indexOf('achiev') !== -1 ? '#0a4d3c'
+      : '#1a237e';
 
   const htmlBody =
     '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #dde3ed;">' +
@@ -466,19 +466,19 @@ function sendWelcomeEmail(toEmail, studentName, course) {
     '</div>';
 
   MailApp.sendEmail({
-    to:       toEmail,
-    subject:  subject,
-    body:     plainBody,
+    to: toEmail,
+    subject: subject,
+    body: plainBody,
     htmlBody: htmlBody,
-    name:     'Delta Education',
-    replyTo:  SUPPORT_EMAIL
+    name: 'Delta Education',
+    replyTo: SUPPORT_EMAIL
   });
 }
 
 // ─── NEW ENROLLMENT ALERT (to owner — fired on submitEnrollment) ────────────
 function sendNewEnrollmentAlert(studentName, studentEmail, phone, course, txnId, amountPaid) {
   const timestamp = Utilities.formatDate(new Date(), 'Asia/Kolkata', 'dd MMM yyyy, hh:mm a');
-  const subject   = 'New Enrollment Pending Approval — ' + studentName + ' | ' + course;
+  const subject = 'New Enrollment Pending Approval — ' + studentName + ' | ' + course;
 
   const plainBody =
     'Hi Suresh,\n\n' +
@@ -493,7 +493,7 @@ function sendNewEnrollmentAlert(studentName, studentEmail, phone, course, txnId,
     'Please open the "OUR CUSTOMER" tab in Delta Master Sheet and change the Status to "Approved" to send them the access email.\n\n' +
     'This is an automated alert from the Delta Enrollment System.';
 
-  const tr = function(label, value, shade) {
+  const tr = function (label, value, shade) {
     return '<tr style="border-top:1px solid #e0e6f0;' + (shade ? 'background:#fafbfd;' : '') + '">' +
       '<td style="padding:10px 16px;font-size:13px;color:#666;width:35%;">' + label + '</td>' +
       '<td style="padding:10px 16px;font-size:13px;color:#111;font-weight:600;">' + value + '</td>' +
@@ -526,11 +526,11 @@ function sendNewEnrollmentAlert(studentName, studentEmail, phone, course, txnId,
     '</div>';
 
   MailApp.sendEmail({
-    to:       OWNER_EMAIL,
-    subject:  subject,
-    body:     plainBody,
+    to: OWNER_EMAIL,
+    subject: subject,
+    body: plainBody,
     htmlBody: htmlBody,
-    name:     'Delta Enrollment System'
+    name: 'Delta Enrollment System'
   });
 }
 
@@ -538,18 +538,18 @@ function sendNewEnrollmentAlert(studentName, studentEmail, phone, course, txnId,
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Delta Admin')
-    .addItem('Approve Selected Row (OUR CUSTOMER)',    'approveSelectedRow')
-    .addItem('Apply Dropdowns + Colors to All Rows',  'applyDropdownsToAllRows')
+    .addItem('Approve Selected Row (OUR CUSTOMER)', 'approveSelectedRow')
+    .addItem('Apply Dropdowns + Colors to All Rows', 'applyDropdownsToAllRows')
     .addSeparator()
-    .addItem('SETUP: Install Auto-Approve Trigger',   'installEditTrigger')
+    .addItem('SETUP: Install Auto-Approve Trigger', 'installEditTrigger')
     .addSeparator()
-    .addItem('Permission Test (send test email)',      'manualPermissionTrigger')
+    .addItem('Permission Test (send test email)', 'manualPermissionTrigger')
     .addToUi();
 }
 
 function approveSelectedRow() {
-  const ui    = SpreadsheetApp.getUi();
-  const ss    = SpreadsheetApp.getActiveSpreadsheet();
+  const ui = SpreadsheetApp.getUi();
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getActiveSheet();
 
   if (sheet.getName() !== 'OUR CUSTOMER') {
@@ -602,7 +602,7 @@ function installEditTrigger() {
 function validateReferralCode(sheet, inputCode) {
   if (!inputCode) return { valid: false };
   const values = sheet.getDataRange().getValues();
-  const code   = inputCode.toString().trim().toUpperCase();
+  const code = inputCode.toString().trim().toUpperCase();
   for (let i = 1; i < values.length; i++) {
     const sheetCode = (values[i][COL_REFERRAL_CODE] || '').toString().trim().toUpperCase();
     if (sheetCode === code) {
