@@ -25,21 +25,23 @@ const COLOR_REJECTED = { bg: '#434343', fg: '#ffffff', fw: 'bold' }; // Black
 const COLOR_NONE = { bg: '#ffffff', fg: '#000000', fw: 'normal' };
 
 // ─── REFERRER SHEET COLUMN INDICES (0-based) ───────────────────────────────
-const COL_NAME = 0;
-const COL_EMAIL = 1;
-const COL_PASSWORD = 2;
+// Sheet columns: Name|Email|Password|ReferralCode|Type|Category|UPI|Phone|Approvals|TotalReferrals|TotalEarned|TotalPaid|EliteInc|AchieverInc|ElevateInc|Status
+const COL_NAME          = 0;
+const COL_EMAIL         = 1;
+const COL_PASSWORD      = 2;
 const COL_REFERRAL_CODE = 3;
-const COL_TYPE = 4;
-const COL_CATEGORY = 5;
-const COL_UPI = 6;
-const COL_APPROVALS = 7;
-const COL_TOTAL_REFS = 8;
-const COL_TOTAL_EARNED = 9;
-const COL_TOTAL_PAID = 10;
-const COL_ELITE_INC = 11;
-const COL_ACHIEVER_INC = 12;
-const COL_ELEVATE_INC = 13;
-const COL_STATUS = 14;
+const COL_TYPE          = 4;
+const COL_CATEGORY      = 5;
+const COL_UPI           = 6;
+const COL_PHONE         = 7;
+const COL_APPROVALS     = 8;
+const COL_TOTAL_REFS    = 9;
+const COL_TOTAL_EARNED  = 10;
+const COL_TOTAL_PAID    = 11;
+const COL_ELITE_INC     = 12;
+const COL_ACHIEVER_INC  = 13;
+const COL_ELEVATE_INC   = 14;
+const COL_STATUS        = 15;
 
 // ─── ROUTER ────────────────────────────────────────────────────────────────
 function doPost(e) {
@@ -79,9 +81,10 @@ function doPost(e) {
         return response({ success: false, error: 'Invalid or expired OTP' });
       }
       const referralCode = generateUniqueCode(sheet);
+      const phone = (data.phone || '').toString().trim();
       sheet.appendRow([
         data.name, data.email, data.password, referralCode,
-        'External', data.category, data.upi,
+        'External', data.category, data.upi, phone,
         0, 0, 0, 0, '', '', '', 'Pending'
       ]);
       CACHE.remove(data.email);
@@ -126,15 +129,21 @@ function doPost(e) {
       }
       if (!userData) return response({ success: false, error: 'Referrer data not found' });
 
-      const refSheet = ss.getSheetByName('Referrals');
+      // Fetch referral history from OUR CUSTOMER sheet (where enrollments live)
+      const customerSheet = ss.getSheetByName('OUR CUSTOMER');
       let history = [];
-      if (refSheet) {
-        const refData = refSheet.getDataRange().getValues();
-        for (let j = 1; j < refData.length; j++) {
-          if (refData[j][0] === data.referralCode) {
+      if (customerSheet) {
+        const custData = customerSheet.getDataRange().getValues();
+        const refCodeUpper = (data.referralCode || '').toString().trim().toUpperCase();
+        for (let j = 1; j < custData.length; j++) {
+          const rowCode = (custData[j][6] || '').toString().trim().toUpperCase(); // Column G: Referral Code
+          if (rowCode === refCodeUpper) {
             history.push({
-              studentName: refData[j][1], course: refData[j][2],
-              status: refData[j][3], date: refData[j][4], amount: refData[j][5]
+              studentName: custData[j][1],  // Column B: Name
+              course:      custData[j][4],  // Column E: Course
+              status:      custData[j][12], // Column M: Status
+              date:        custData[j][0],  // Column A: Timestamp
+              amount:      custData[j][9]   // Column J: Amount Paid
             });
           }
         }
@@ -186,6 +195,11 @@ function doPost(e) {
       if (saved !== data.otp.toString()) return response({ success: false, error: 'Incorrect OTP. Please try again.' });
       CACHE.remove('student_' + data.email);
       return response({ success: true });
+    }
+
+    // 10. CHECK REFERRER CONFLICT (student enrollment cross-check)
+    if (data.action === 'checkReferrerConflict') {
+      return response(checkReferrerConflict(sheet, data.email, data.phone));
     }
 
     return response({ success: false, error: 'Unknown action' });
@@ -625,6 +639,34 @@ function checkDuplicateEmail(sheet, email) {
     if (data[i][COL_EMAIL] === email) return true;
   }
   return false;
+}
+
+// ─── CHECK REFERRER CONFLICT (student vs referrer cross-check) ──────────────
+// Returns { conflict: true, message: '...' } if the student's email or phone
+// matches an existing referrer. This prevents self-referral discount abuse.
+function checkReferrerConflict(sheet, email, phone) {
+  const data = sheet.getDataRange().getValues();
+  const normEmail = (email || '').toString().trim().toLowerCase();
+  const normPhone = (phone || '').toString().trim().replace(/\s|-/g, '');
+
+  for (let i = 1; i < data.length; i++) {
+    const refEmail = (data[i][COL_EMAIL] || '').toString().trim().toLowerCase();
+    const refPhone = (data[i][COL_PHONE] || '').toString().trim().replace(/\s|-/g, '');
+
+    if (normEmail && refEmail === normEmail) {
+      return {
+        conflict: true,
+        message: 'This email is already registered as a referral partner. You cannot use the same email for student enrollment. Your application would be manually checked & in case of any discrepancy you would not be given access to the course.'
+      };
+    }
+    if (normPhone && normPhone.length >= 10 && refPhone.length >= 10 && refPhone.slice(-10) === normPhone.slice(-10)) {
+      return {
+        conflict: true,
+        message: 'This phone number is already registered as a referral partner. You cannot use the same phone number for student enrollment. Your application would be manually checked & in case of any discrepancy you would not be given access to the course.'
+      };
+    }
+  }
+  return { conflict: false };
 }
 
 function generateUniqueCode(sheet) {

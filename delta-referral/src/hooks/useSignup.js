@@ -6,7 +6,7 @@ import { apiSendOtp, apiRegister } from '../services/api';
 
 export const useSignup = () => {
   const [formData, setFormData] = useState({
-    name: '', email: '', password: '', upi: '', category: 'SST Student',
+    name: '', email: '', password: '', phone: '', upi: '', category: 'SST Student',
   });
   const [otpStep,    setOtpStep]    = useState('form'); // 'form' | 'otp'
   const [otpValue,   setOtpValue]   = useState('');

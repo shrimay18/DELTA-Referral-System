@@ -147,11 +147,12 @@ const SignupModal = ({ onClose, signup }) => {
                 { label: 'Full Name',      key: 'name',     type: 'text',     placeholder: 'e.g. Priya Sharma' },
                 { label: 'Email Address',  key: 'email',    type: 'email',    placeholder: 'you@example.com' },
                 { label: 'Password',       key: 'password', type: 'password', placeholder: 'Create a secure password' },
+                { label: 'Mobile Number',  key: 'phone',    type: 'tel',      placeholder: '10-digit mobile number', maxLength: 10 },
                 { label: 'UPI ID',         key: 'upi',      type: 'text',     placeholder: 'yourname@upi' },
-              ].map(({ label, key, type, placeholder }) => (
+              ].map(({ label, key, type, placeholder, maxLength }) => (
                 <div key={key}>
                   <label className="text-[11px] font-semibold uppercase tracking-widest text-white/40 block mb-1.5">{label}</label>
-                  <ModalInput type={type} placeholder={placeholder} required value={formData[key]} onChange={field(key)} />
+                  <ModalInput type={type} placeholder={placeholder} required value={formData[key]} onChange={field(key)} maxLength={maxLength} />
                 </div>
               ))}
               <div>

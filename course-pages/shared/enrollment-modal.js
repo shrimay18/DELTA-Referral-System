@@ -189,9 +189,30 @@ async function _submitStep1() {
   // Send OTP to student's email before proceeding
   const btn = document.getElementById('em-next1');
   const btnText = btn ? btn.querySelector('span') || btn : btn;
-  if (btn) { btn.disabled = true; btn.textContent = 'Sending OTP…'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Checking…'; }
 
   try {
+    // 1. Cross-check: block if email/phone belongs to an existing referrer
+    const conflictRes = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'checkReferrerConflict', email, phone })
+    });
+    const conflictJson = await conflictRes.json();
+
+    if (conflictJson.conflict) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Continue'; }
+      const errEl = document.getElementById('em-err1');
+      if (errEl) {
+        errEl.textContent = conflictJson.message || 'You cannot use the same email/phone as your referrer account.';
+        errEl.classList.add('show');
+      }
+      return;
+    }
+
+    // 2. No conflict — proceed with sending OTP
+    if (btn) { btn.textContent = 'Sending OTP…'; }
+
     const res  = await fetch(GAS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
