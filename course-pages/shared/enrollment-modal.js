@@ -35,7 +35,7 @@ const COURSE_CONFIG = {
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxVu2JixgtMQV15RrKm9cZ0BwRDzq4yLRdlyp8XiHw5eOS2hNqR952NMsHGeTn8Hx96JQ/exec';
 const WHATSAPP_COMMUNITY = 'https://chat.whatsapp.com/JeHuNDd6PfTEiWuC4eVr0R';
-const PAYMENT_WHATSAPP   = '+919901716335';
+const PAYMENT_WHATSAPP   = '+91 9322385170';
 
 // ── STATE ──────────────────────────────────────────────────────────────────
 let _course = null;
@@ -483,7 +483,7 @@ function _buildStep3() {
 
     <div class="em-payment-note">
       📲 After paying, <strong>WhatsApp your payment screenshot</strong> to
-      <a href="https://wa.me/${PAYMENT_WHATSAPP.replace('+', '')}" target="_blank">${PAYMENT_WHATSAPP}</a>.
+      <a href="https://wa.me/${PAYMENT_WHATSAPP.replace(/[+ ]/g, '')}" target="_blank">${PAYMENT_WHATSAPP}</a>.
       Then fill in your transaction details below and submit.
     </div>
 
